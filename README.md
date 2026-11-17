@@ -26,12 +26,12 @@ O projeto não foi adaptado para Cloudflare Workers. Prisma com o adaptador `pg`
 O Supabase pode fornecer o PostgreSQL sem alterar a autenticação atual do painel. Esta aplicação usa Prisma **somente no servidor**; não precisa de `NEXT_PUBLIC_SUPABASE_URL`, chave publicável nem `service_role` para acessar o banco.
 
 1. Crie um projeto Supabase **separado** para a Nexora.
-2. No painel do projeto, abra **Connect** e copie a string **Session pooler** (porta `5432`). Use-a em `DATABASE_URL` e `DIRECT_URL` no arquivo `.env` local. O modelo está em `.env.supabase.example`. A URL direta pode substituir `DIRECT_URL` se sua rede alcançar IPv6.
+2. No painel do projeto, abra **Connect**. Para a aplicação no Vercel, copie **Transaction pooler** (porta `6543`) em `DATABASE_URL` e acrescente `sslmode=require&pgbouncer=true` aos parâmetros da URL. Para as migrações, use **Session pooler** (porta `5432`) em `DIRECT_URL`, ou a conexão direta se sua rede alcançar IPv6. O modelo está em `.env.supabase.example`.
 3. Use a senha de banco do projeto na string. Codifique caracteres especiais da senha na URL. Nunca coloque a conexão em variável `NEXT_PUBLIC_*` ou no Git.
-4. Execute `npm run db:migrate` e depois `npm run admin:create`. O comando de migração usa `DIRECT_URL` quando ela estiver definida.
+4. Execute `npm run db:migrate` e depois `npm run admin:create` em um ambiente local ou administrativo com essas URLs. O comando de migração usa `DIRECT_URL` quando ela estiver definida. Adicionar as variáveis à Vercel, por si só, não aplica as migrations nem cria o administrador.
 5. A migration inicial habilita RLS em todas as tabelas da aplicação no schema `public`, sem políticas para acesso anônimo. Mantenha a Data API do Supabase desativada se usar apenas Prisma.
 
-Para aplicações Node persistentes, a conexão Session pooler funciona na maioria das redes IPv4. A escolha do pooler para uma hospedagem serverless depende do host e deve ser validada antes do deploy.
+Para aplicações Node persistentes, a conexão Session pooler funciona na maioria das redes IPv4. No Vercel, a aplicação usa o Transaction pooler com pool de uma conexão por instância.
 
 ## Desenvolvimento local
 
