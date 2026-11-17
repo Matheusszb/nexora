@@ -1,0 +1,1 @@
+export default function Loading() { return <main className="container page-shell"><div className="skeleton title-skeleton"/><div className="skeleton-grid">{[1,2,3].map(i => <div className="skeleton card-skeleton" key={i}/>)}</div></main>; }

@@ -1,0 +1,2 @@
+import Link from "next/link";
+export default function NotFound() { return <main className="container empty-page"><span className="eyebrow">404 · Página não encontrada</span><h1>Este caminho não está disponível.</h1><p>Você pode voltar à página inicial ou explorar o catálogo.</p><div className="actions"><Link className="btn btn-primary" href="/">Voltar ao início</Link><Link className="btn btn-outline" href="/produtos">Ver produtos</Link></div></main>; }
