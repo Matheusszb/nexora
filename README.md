@@ -1,6 +1,6 @@
 # Nexora Digital
 
-Loja de produtos digitais em português brasileiro, com catálogo público e painel administrativo. A aplicação usa **Next.js 16**, **TypeScript**, **PostgreSQL** e **Prisma 7**. O checkout inicial é um redirecionamento validado para a Kiwify, configurado individualmente em cada produto.
+Loja de materiais digitais para concursos públicos em português brasileiro, com catálogo público e painel administrativo. A aplicação usa **Next.js 16**, **TypeScript**, **PostgreSQL** e **Prisma 7**. O checkout inicial é um redirecionamento validado para a Kiwify, configurado individualmente em cada produto.
 
 ## Arquitetura
 

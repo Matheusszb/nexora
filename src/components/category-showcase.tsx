@@ -5,21 +5,22 @@ import Link from "next/link";
 type VisibleCategory = Category & { _count: { products: number } };
 
 const plannedCategories = [
-  "Concursos públicos",
-  "Cursos online",
-  "E-books",
-  "Planilhas e ferramentas",
-  "Marketing digital",
-  "Produtividade",
-  "Materiais educativos"
+  "Polícia Militar",
+  "Polícia Civil",
+  "Guarda Municipal",
+  "Concursos bancários",
+  "Tribunais",
+  "Área administrativa",
+  "Educação",
+  "Saúde"
 ];
 
 const symbols = ["◇", "⌘", "▤", "▦", "✧", "↗", "◈", "✦"];
 
 export function CategoryShowcase({ categories, unavailable }: { categories: VisibleCategory[]; unavailable: boolean }) {
   return <section className="section" id="categorias"><div className="container">
-    <div className="section-head"><div><span className="eyebrow">Encontre seu caminho</span><h2>Explore por categoria</h2></div><p>Escolha o assunto que faz sentido para o seu momento e veja os materiais disponíveis.</p></div>
-    {unavailable && <p className="category-status" role="status">O catálogo está temporariamente indisponível. As categorias abaixo são uma prévia dos temas planejados.</p>}
+    <div className="section-head"><div><span className="eyebrow">ENCONTRE SUA ÁREA</span><h2>Prepare-se por carreira</h2></div><p>Explore os materiais pela área do concurso que você pretende prestar.</p></div>
+    {unavailable && <p className="category-status" role="status">O catálogo está temporariamente indisponível. As áreas abaixo mostram temas planejados.</p>}
     <div className="category-grid">
       {categories.length > 0 ? categories.map((category, i) => <Link className="category-card" href={`/categorias/${category.slug}`} key={category.id}>
         {category.imageUrl && <Image className="category-card-image" src={category.imageUrl} alt="" fill sizes="(max-width: 760px) 50vw, 25vw" unoptimized />}

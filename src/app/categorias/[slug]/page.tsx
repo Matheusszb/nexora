@@ -11,7 +11,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const category = await db.category.findUnique({ where: { slug } });
   if (!category || !category.active) return { title: "Categoria indisponível", robots: { index: false } };
-  return { title: category.name, description: category.description || `Produtos digitais de ${category.name} na Nexora Digital.`, alternates: { canonical: `/categorias/${slug}` } };
+  return { title: category.name, description: category.description || `Materiais para concursos na área de ${category.name} na Nexora Digital.`, alternates: { canonical: `/categorias/${slug}` } };
 }
 
 export default async function CategoryPage({ params, searchParams }: Props) {
@@ -28,5 +28,5 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   if (!count) notFound();
   const page = Math.max(1, Math.min(Math.ceil(count / 9), Number(pagina) || 1));
   const products = await db.product.findMany({ where: { categoryId: category.id, status: "PUBLISHED" }, include: { category: true }, orderBy: { publishedAt: "desc" }, take: 9, skip: (page - 1) * 9 });
-  return <main className="container page-shell"><nav className="breadcrumbs" aria-label="Caminho"><Link href="/">Início</Link><span>/</span><Link href="/produtos">Produtos</Link><span>/</span><span>{category.name}</span></nav><div className="page-intro"><span className="eyebrow">CATEGORIA</span><h1>{category.name}</h1><p>{category.description || `Explore os produtos digitais disponíveis em ${category.name}.`}</p></div><div className="section-head"><span className="catalog-count">{count} {count === 1 ? "produto disponível" : "produtos disponíveis"}</span><Link className="text-link" href="/produtos">Todo o catálogo ↗</Link></div><div className="product-grid">{products.map(p => <ProductCard key={p.id} product={p}/>)}</div>{count > 9 && <nav className="pagination" aria-label="Páginas da categoria">{Array.from({length:Math.ceil(count/9)},(_,i)=>i+1).map(n => <Link key={n} className={n === page ? "active" : ""} href={`/categorias/${slug}?pagina=${n}`}>{n}</Link>)}</nav>}</main>;
+  return <main className="container page-shell"><nav className="breadcrumbs" aria-label="Caminho"><Link href="/">Início</Link><span>/</span><Link href="/produtos">Materiais</Link><span>/</span><span>{category.name}</span></nav><div className="page-intro"><span className="eyebrow">ÁREA DE CONCURSO</span><h1>{category.name}</h1><p>{category.description || `Explore os materiais disponíveis em ${category.name}.`}</p></div><div className="section-head"><span className="catalog-count">{count} {count === 1 ? "material disponível" : "materiais disponíveis"}</span><Link className="text-link" href="/produtos">Todo o catálogo ↗</Link></div><div className="product-grid">{products.map(p => <ProductCard key={p.id} product={p}/>)}</div>{count > 9 && <nav className="pagination" aria-label="Páginas da categoria">{Array.from({length:Math.ceil(count/9)},(_,i)=>i+1).map(n => <Link key={n} className={n === page ? "active" : ""} href={`/categorias/${slug}?pagina=${n}`}>{n}</Link>)}</nav>}</main>;
 }
