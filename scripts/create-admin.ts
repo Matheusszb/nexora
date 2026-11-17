@@ -10,7 +10,7 @@ if (!email || !password || password.length < 12) {
   process.exit(1);
 }
 
-const db = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DIRECT_URL || process.env.DATABASE_URL! }) });
+const db = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL! }) });
 try {
   const passwordHash = await bcrypt.hash(password, 12);
   await db.admin.upsert({ where: { email }, create: { email, passwordHash }, update: { passwordHash, active: true } });
