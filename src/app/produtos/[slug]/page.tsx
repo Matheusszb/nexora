@@ -15,8 +15,8 @@ const lines = (value: string) => value.split(/\r?\n/).map(line => line.trim()).f
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const product = await db.product.findUnique({ where: { slug }, include: { category: true } });
-  if (!product || product.status !== "PUBLISHED" || !product.category.active) return { title: "Produto indisponível", robots: { index: false } };
+  const product = await db.product.findUnique({ where: { slug } });
+  if (!product || product.status !== "PUBLISHED") return { title: "Produto indisponível", robots: { index: false } };
   const title = product.seoTitle || product.name;
   const description = product.metaDescription || product.shortDescription;
   return { title, description, alternates: { canonical: `/produtos/${product.slug}` }, openGraph: { title, description, url: siteUrl(`/produtos/${product.slug}`), images: product.socialImageUrl || product.imageUrl ? [product.socialImageUrl || product.imageUrl!] : ["/nexora-logo.png"] } };
@@ -24,14 +24,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ProductPage({ params }: Props) {
   const { slug } = await params;
-  const product = await db.product.findUnique({ where: { slug }, include: { category: true, images: { orderBy: { sortOrder: "asc" } } } });
+  const product = await db.product.findUnique({ where: { slug }, include: { images: { orderBy: { sortOrder: "asc" } } } });
   if (!product) {
     const old = await db.slugRedirect.findUnique({ where: { entity_oldSlug: { entity: "product", oldSlug: slug } } });
     if (old) { const target = await db.product.findUnique({ where: { id: old.targetId } }); if (target?.status === "PUBLISHED") permanentRedirect(`/produtos/${target.slug}`); }
     notFound();
   }
-  if (product.status !== "PUBLISHED" || !product.category.active) notFound();
-  const related = await db.product.findMany({ where: { status: "PUBLISHED", categoryId: product.categoryId, id: { not: product.id } }, include: { category: true }, take: 3, orderBy: { publishedAt: "desc" } });
+  if (product.status !== "PUBLISHED") notFound();
+  const related = await db.product.findMany({ where: { status: "PUBLISHED", id: { not: product.id } }, take: 3, orderBy: { publishedAt: "desc" } });
   const basicIncluded = lines(product.included);
   const upgradeIncluded = lines(product.upgradeIncluded);
   const upgradeAvailable = Boolean(product.upgradeName && product.upgradeIncluded.trim() && product.upgradePriceCents != null && product.upgradePriceCents > product.priceCents && product.upgradeCheckoutUrl);
@@ -41,7 +41,6 @@ export default async function ProductPage({ params }: Props) {
     name: product.name,
     description: product.shortDescription,
     image: product.imageUrl || siteUrl("/nexora-logo.png"),
-    category: product.category.name,
     brand: { "@type": "Brand", name: "Nexora Digital" },
     offers: [
       { "@type": "Offer", name: "Plano básico", priceCurrency: "BRL", price: (product.priceCents / 100).toFixed(2), availability: product.checkoutUrl ? "https://schema.org/InStock" : "https://schema.org/OutOfStock", url: siteUrl(`/produtos/${slug}#planos`) },
@@ -54,7 +53,7 @@ export default async function ProductPage({ params }: Props) {
     <div className="container"><nav className="breadcrumbs product-breadcrumbs" aria-label="Caminho"><Link href="/">Início</Link><span>/</span><Link href="/produtos">Materiais</Link><span>/</span><span>{product.name}</span></nav></div>
     <section className="product-hero">
       <div className="container product-hero-inner">
-        <span className="hero-kicker"><i/> {product.category.name} · {product.productType}</span>
+        <span className="hero-kicker"><i/> {product.productType}</span>
         <h1>{product.name}</h1>
         <p>{product.shortDescription}</p>
         <div className="product-hero-media">{product.imageUrl ? <Image src={product.imageUrl} alt={`Capa de ${product.name}`} fill sizes="(max-width: 760px) 90vw, 760px" unoptimized priority /> : <div className="cover-placeholder"><span>{product.productType}</span><strong>{product.name}</strong><small>NEXORA DIGITAL</small></div>}</div>

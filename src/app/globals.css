@@ -11,25 +11,3 @@ body:has(.admin-app)>.site-header,body:has(.admin-app)>.footer,body:has(.admin-l
 .detail-gallery{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:18px}.detail-gallery>div{position:relative;height:150px;background:#21162f;border:1px solid #493457;border-radius:10px;overflow:hidden}.detail-gallery img{object-fit:cover}@media(max-width:760px){.detail-gallery{grid-template-columns:repeat(2,minmax(0,1fr))}.detail-gallery>div{height:130px}}
 .card-actions{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-top:18px;font-size:12px;font-weight:700}.card-actions>a:first-child{color:#cab4df}.card-actions>a:first-child:hover{text-decoration:underline}.card-buy{color:#bd82fa}.card-buy:hover{text-decoration:underline}
 .delete-confirm{position:relative;color:#c18cee;font-size:11px;font-weight:650}.delete-confirm summary{cursor:pointer;list-style:none}.delete-confirm summary::-webkit-details-marker{display:none}.delete-confirm form{position:absolute;right:0;top:20px;z-index:2;width:max-content;background:#2b1b32;border:1px solid #78445e;border-radius:8px;padding:10px;box-shadow:0 8px 25px #0008}.delete-confirm form button{color:#ffc1d0}
-
-/* Quadrados de categorias: cada item mantém sua proporção mesmo sem produtos publicados. */
-.category-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
-.category-card{aspect-ratio:1;min-height:0;isolation:isolate;padding:22px;background:radial-gradient(circle at 80% 20%,#63328b66,transparent 48%),linear-gradient(145deg,#241632,#120f1b);border-color:#493257;border-radius:18px}
-.category-card:nth-child(3n+2){background:radial-gradient(circle at 15% 15%,#7740b057,transparent 48%),linear-gradient(145deg,#21152e,#110f1c)}
-.category-card:nth-child(3n+3){background:radial-gradient(circle at 75% 75%,#4a2e9a61,transparent 48%),linear-gradient(145deg,#1d1733,#100d1a)}
-.category-card:before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,#09080f0d 10%,#09080fba 100%);pointer-events:none}
-.category-card:after{z-index:1;width:78%;height:78%;right:-30%;top:-24%;border-color:#b885fb2e;box-shadow:0 0 0 32px #a352ff08,0 0 0 68px #a352ff05}
-.category-card-image{object-fit:cover;z-index:0;transition:transform .25s ease}
-.category-card:hover .category-card-image{transform:scale(1.04)}
-.category-card .category-icon,.category-card-copy{position:relative;z-index:2}
-.category-card .category-icon{width:46px;height:46px;border-radius:12px;background:#7f32d23b;backdrop-filter:blur(8px);font-size:21px}
-.category-card-copy h3{font-size:clamp(17px,1.6vw,22px);line-height:1.18;max-width:200px;margin:0 0 10px}
-.category-card-copy small{color:#d3c3df;font-size:12px;line-height:1.4}
-.category-card-copy small span{color:#c083fb;margin-left:3px}
-.category-card-preview{cursor:default;border-style:dashed}
-.category-card-preview:hover{transform:none;border-color:#493257}
-.category-card-preview .category-card-copy small{color:#aa97b8}
-.category-status{margin:-5px 0 20px;color:#aa9ab9;font-size:13px;line-height:1.5}
-@media(max-width:1000px){.category-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media(max-width:760px){.category-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.category-card{padding:17px}.category-card-copy h3{font-size:17px}}
-@media(max-width:520px){.category-grid{gap:10px}.category-card{padding:14px;border-radius:14px}.category-card .category-icon{width:35px;height:35px;font-size:17px;border-radius:9px}.category-card-copy h3{font-size:14px;margin-bottom:6px}.category-card-copy small{font-size:10px}}

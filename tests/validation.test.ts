@@ -3,7 +3,7 @@ import test from "node:test";
 import { productSchema, formPrice } from "../src/lib/validation";
 
 const base = {
-  name: "Guia de estudos", slug: "guia-de-estudos", categoryId: "category-1",
+  name: "Guia de estudos", slug: "guia-de-estudos",
   shortDescription: "Material digital para organizar seus estudos.", description: "",
   included: "", audience: "", requirements: "", delivery: "", refundPolicy: "",
   productType: "E-book", imageUrl: "", socialImageUrl: "", priceCents: 4900,

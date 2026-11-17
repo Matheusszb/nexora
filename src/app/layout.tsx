@@ -9,7 +9,7 @@ import "./course-list.css";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
   title: { default: "Nexora Digital | Materiais para concursos públicos", template: "%s | Nexora Digital" },
-  description: "Explore materiais digitais para concursos públicos por carreira e área. Confira conteúdo, formato e condições antes de comprar.",
+  description: "Explore todos os cursos e apostilas para concursos públicos. Confira conteúdo, formato e condições antes de comprar.",
   openGraph: { type: "website", locale: "pt_BR", siteName: "Nexora Digital", images: ["/nexora-logo.png"] },
   twitter: { card: "summary_large_image" },
   robots: { index: true, follow: true }

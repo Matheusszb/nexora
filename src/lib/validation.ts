@@ -8,20 +8,9 @@ const safeUrl = z.string().trim().optional().or(z.literal(""))
 
 const checkoutUrl = safeUrl.refine(v => !v || isAllowedCheckoutUrl(v), "Use um checkout oficial da Cakto ou da Kiwify");
 
-export const categorySchema = z.object({
-  name: z.string().trim().min(2).max(90),
-  slug: z.string().trim().max(90).transform(slugify).refine(Boolean),
-  description: z.string().trim().max(500).default(""),
-  icon: z.string().trim().max(40).default("grid"),
-  imageUrl: safeUrl,
-  sortOrder: z.coerce.number().int().min(0).max(9999).default(0),
-  active: z.boolean().default(false)
-});
-
 export const productSchema = z.object({
   name: z.string().trim().min(3).max(150),
   slug: z.string().trim().max(90).transform(slugify).refine(Boolean),
-  categoryId: z.string().min(1),
   shortDescription: z.string().trim().min(10).max(320),
   description: z.string().trim().max(15000).default(""),
   included: z.string().trim().max(5000).default(""),

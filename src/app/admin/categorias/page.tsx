@@ -1,15 +1,5 @@
-import { requireAdmin } from "@/lib/auth";
-import { db } from "@/lib/db";
-import { AdminShell } from "@/components/admin-shell";
-import { deleteCategory, saveCategory } from "../actions";
+import { redirect } from "next/navigation";
 
-export const dynamic = "force-dynamic";
-export const metadata = { title: "Gerenciar categorias", robots: { index: false, follow: false } };
-
-export default async function Categories({ searchParams }: { searchParams: Promise<{ editar?: string; salvo?: string; erro?: string }> }) {
-  const admin = await requireAdmin();
-  const { editar, salvo, erro } = await searchParams;
-  const categories = await db.category.findMany({ include: { _count: { select: { products: true } } }, orderBy: [{ sortOrder: "asc" }, { name: "asc" }] });
-  const item = categories.find(c => c.id === editar);
-  return <AdminShell title="Categorias" subtitle="Organize os temas da loja sem alterar o código." email={admin.email}>{salvo && <div className="form-success">Categoria salva com sucesso.</div>}{erro && <div className="form-error">{erro === "em-uso" ? "A categoria contém produtos. Mova ou arquive os produtos antes de excluí-la." : erro === "duplicado" ? "Já existe uma categoria com este slug." : erro === "salvar" ? "Não foi possível salvar agora. Tente novamente." : "Revise os dados da categoria."}</div>}<div className="admin-two-col"><section className="admin-panel"><div className="admin-panel-head"><div><h2>Categorias cadastradas</h2><p>{categories.length} no total</p></div></div>{categories.length ? <div className="admin-list">{categories.map(c => <div className="category-admin-row" key={c.id}><span className="admin-list-icon">◇</span><span><strong>{c.name}</strong><small>/{c.slug} · {c._count.products} produtos · {c.active ? "Ativa" : "Inativa"}</small></span><div className="row-actions"><a href={`/admin/categorias?editar=${c.id}`}>Editar</a><details className="delete-confirm"><summary>Excluir</summary><form action={deleteCategory}><input type="hidden" name="id" value={c.id}/><button>Confirmar exclusão</button></form></details></div></div>)}</div> : <div className="admin-empty">Nenhuma categoria cadastrada.</div>}</section><section className="admin-panel"><div className="admin-panel-head"><div><h2>{item ? "Editar categoria" : "Nova categoria"}</h2><p>Somente categorias ativas com produtos publicados aparecem na loja.</p></div></div><form action={saveCategory} className="form-grid">{item && <input type="hidden" name="id" value={item.id}/>}<label>Nome<input className="field" required name="name" defaultValue={item?.name || ""}/></label><label>Slug<input className="field" required name="slug" defaultValue={item?.slug || ""} placeholder="exemplo-categoria"/></label><label className="span-2">Descrição<textarea className="textarea" name="description" rows={3} defaultValue={item?.description || ""}/></label><label>Ícone ou código interno<input className="field" name="icon" defaultValue={item?.icon || "grid"}/></label><label>Ordem<input className="field" type="number" min="0" name="sortOrder" defaultValue={item?.sortOrder || 0}/></label><label className="span-2">URL da imagem<input className="field" type="url" name="imageUrl" defaultValue={item?.imageUrl || ""}/></label><label className="check-label"><input type="checkbox" name="active" defaultChecked={item?.active ?? true}/> Categoria ativa</label><div className="span-2"><button className="btn btn-primary">{item ? "Salvar alterações" : "Criar categoria"}</button></div></form></section></div></AdminShell>;
+export default function CategoriesAdmin() {
+  redirect("/admin/produtos");
 }

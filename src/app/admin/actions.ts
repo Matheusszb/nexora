@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { clearSession, createSession, requireAdmin } from "@/lib/auth";
-import { categorySchema, formBool, formPrice, formString, productSchema } from "@/lib/validation";
+import { formBool, formPrice, formString, productSchema } from "@/lib/validation";
 
 const attemptHash = (value: string) => createHash("sha256").update(value).digest("hex");
 
@@ -31,40 +31,9 @@ export async function login(form: FormData) {
 
 export async function logout() { await clearSession(); redirect("/admin/entrar"); }
 
-function categoryFromForm(form: FormData) {
-  return categorySchema.safeParse({ name: formString(form,"name"), slug: formString(form,"slug"), description: formString(form,"description"), icon: formString(form,"icon") || "grid", imageUrl: formString(form,"imageUrl"), sortOrder: formString(form,"sortOrder") || "0", active: formBool(form,"active") });
-}
-
-export async function saveCategory(form: FormData) {
-  const admin = await requireAdmin();
-  const id = formString(form,"id");
-  const parsed = categoryFromForm(form);
-  if (!parsed.success) redirect(`/admin/categorias?erro=validacao${id ? `&editar=${encodeURIComponent(id)}` : ""}`);
-  try {
-    const old = id ? await db.category.findUnique({ where: { id } }) : null;
-    await db.$transaction(async tx => {
-      const category = id ? await tx.category.update({ where: { id }, data: parsed.data }) : await tx.category.create({ data: parsed.data });
-      if (old && old.slug !== category.slug) await tx.slugRedirect.upsert({ where: { entity_oldSlug: { entity: "category", oldSlug: old.slug } }, create: { entity: "category", oldSlug: old.slug, targetId: category.id }, update: { targetId: category.id } });
-      await tx.adminLog.create({ data: { adminId: admin.id, action: id ? "update" : "create", entity: "category", entityId: category.id } });
-    });
-  } catch (error) { redirect(`/admin/categorias?erro=${(error as { code?: string }).code === "P2002" ? "duplicado" : "salvar"}`); }
-  revalidatePath("/"); revalidatePath("/produtos");
-  redirect("/admin/categorias?salvo=1");
-}
-
-export async function deleteCategory(form: FormData) {
-  const admin = await requireAdmin();
-  const id = formString(form,"id");
-  if (await db.product.count({ where: { categoryId: id } })) redirect("/admin/categorias?erro=em-uso");
-  await db.category.delete({ where: { id } });
-  await db.adminLog.create({ data: { adminId: admin.id, action: "delete", entity: "category", entityId: id } });
-  revalidatePath("/");
-  redirect("/admin/categorias?salvo=1");
-}
-
 function productFromForm(form: FormData) {
   return productSchema.safeParse({
-    name: formString(form,"name"), slug: formString(form,"slug"), categoryId: formString(form,"categoryId"),
+    name: formString(form,"name"), slug: formString(form,"slug"),
     shortDescription: formString(form,"shortDescription"), description: formString(form,"description"), included: formString(form,"included"), audience: formString(form,"audience"), requirements: formString(form,"requirements"), delivery: formString(form,"delivery"), refundPolicy: formString(form,"refundPolicy"), productType: formString(form,"productType"), imageUrl: formString(form,"imageUrl"), socialImageUrl: formString(form,"socialImageUrl"), priceCents: formPrice(form,"price"), compareAtPriceCents: formPrice(form,"compareAtPrice"), checkoutUrl: formString(form,"checkoutUrl"), upgradeName: formString(form,"upgradeName"), upgradeDescription: formString(form,"upgradeDescription"), upgradeIncluded: formString(form,"upgradeIncluded"), upgradePriceCents: formPrice(form,"upgradePrice"), upgradeCheckoutUrl: formString(form,"upgradeCheckoutUrl"), seoTitle: formString(form,"seoTitle"), metaDescription: formString(form,"metaDescription"), status: formString(form,"status"), featured: formBool(form,"featured")
   });
 }
@@ -76,13 +45,20 @@ export async function saveProduct(form: FormData) {
   if (!parsed.success) redirect(`/admin/produtos/${id || "novo"}?erro=validacao`);
   const gallery = formString(form, "galleryUrls").split(/\r?\n/).map(v => v.trim()).filter(Boolean);
   if (gallery.length > 8 || gallery.some(value => { try { return new URL(value).protocol !== "https:"; } catch { return true; } })) redirect(`/admin/produtos/${id || "novo"}?erro=validacao`);
-  const activeCategory = await db.category.findUnique({ where: { id: parsed.data.categoryId }, select: { active: true } });
-  if (!activeCategory || (parsed.data.status === "PUBLISHED" && !activeCategory.active)) redirect(`/admin/produtos/${id || "novo"}?erro=categoria`);
   try {
     const old = id ? await db.product.findUnique({ where: { id } }) : null;
     const data = { ...parsed.data, imageUrl: parsed.data.imageUrl || null, socialImageUrl: parsed.data.socialImageUrl || null, checkoutUrl: parsed.data.checkoutUrl || null, compareAtPriceCents: parsed.data.compareAtPriceCents ?? null, upgradeName: parsed.data.upgradeName || null, upgradePriceCents: parsed.data.upgradePriceCents ?? null, upgradeCheckoutUrl: parsed.data.upgradeCheckoutUrl || null, publishedAt: parsed.data.status === "PUBLISHED" ? old?.publishedAt || new Date() : null };
     await db.$transaction(async tx => {
-      const product = id ? await tx.product.update({ where: { id }, data }) : await tx.product.create({ data });
+      const product = id
+        ? await tx.product.update({ where: { id }, data })
+        : await tx.product.create({ data: {
+            ...data,
+            categoryId: (await tx.category.upsert({
+              where: { slug: "catalogo-interno" },
+              create: { name: "Catálogo", slug: "catalogo-interno", active: true },
+              update: { active: true }
+            })).id
+          } });
       await tx.productImage.deleteMany({ where: { productId: product.id } });
       if (gallery.length) await tx.productImage.createMany({ data: gallery.map((url, sortOrder) => ({ productId: product.id, url, alt: `Imagem ${sortOrder + 1} de ${product.name}`, sortOrder })) });
       if (old && old.slug !== product.slug) await tx.slugRedirect.upsert({ where: { entity_oldSlug: { entity: "product", oldSlug: old.slug } }, create: { entity: "product", oldSlug: old.slug, targetId: product.id }, update: { targetId: product.id } });

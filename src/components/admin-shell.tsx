@@ -3,7 +3,7 @@ import { Logo } from "./logo";
 import { logout } from "@/app/admin/actions";
 
 const nav = [
-  ["/admin", "◫", "Visão geral"], ["/admin/produtos", "▦", "Produtos"], ["/admin/categorias", "◇", "Categorias"], ["/admin/conteudo", "✎", "Conteúdo"], ["/admin/pedidos", "▤", "Pedidos"], ["/admin/clientes", "♙", "Clientes"], ["/admin/configuracoes", "⚙", "Configurações"]
+  ["/admin", "◫", "Visão geral"], ["/admin/produtos", "▦", "Produtos"], ["/admin/conteudo", "✎", "Conteúdo"], ["/admin/pedidos", "▤", "Pedidos"], ["/admin/clientes", "♙", "Clientes"], ["/admin/configuracoes", "⚙", "Configurações"]
 ];
 
 export function AdminShell({ children, title, subtitle, email }: { children: React.ReactNode; title: string; subtitle?: string; email: string }) {
