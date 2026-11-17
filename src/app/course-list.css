@@ -1,12 +1,11 @@
 .course-list{grid-template-columns:1fr}
-.course-list .product-card{min-height:205px;position:relative;display:flex;align-items:stretch}
-.course-list .product-image{position:absolute;inset:0;height:100%;z-index:0}
-.course-list .product-image:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#09080f0a 0%,#100c18a8 42%,#100c18f5 72%);pointer-events:none}
-.course-list .product-image img{object-fit:cover}
-.course-list .product-card-body{position:relative;z-index:1;width:67%;margin-left:auto;padding:24px 29px;background:linear-gradient(90deg,transparent,#130f1f70 20%,#130f1fc7)}
+.course-list .product-card{min-height:280px;display:grid;grid-template-columns:280px minmax(0,1fr)}
+.course-list .product-image{height:100%;min-height:280px}
+.course-list .product-image img{object-fit:cover;object-position:center}
+.course-list .product-card-body{min-width:0;padding:24px 29px;display:flex;flex-direction:column}
 .course-list .product-card-body h3{font-size:clamp(20px,2.5vw,28px);margin:6px 0}
 .course-list .product-card-body p{min-height:0;max-width:580px}
-.course-list .card-bottom{margin-top:15px;padding-top:11px}
+.course-list .card-bottom{margin-top:auto;padding-top:11px}
 .course-list .price-stack strong{font-size:18px}
 .course-list .card-actions{margin-top:12px}
-@media(max-width:760px){.course-list .product-card{min-height:230px}.course-list .product-card-body{width:100%;display:flex;flex-direction:column;justify-content:end;padding:25px 20px;background:linear-gradient(0deg,#100c18f8 3%,#100c18bf 60%,#100c1840)}.course-list .product-image:after{background:linear-gradient(0deg,#100c18b0,transparent)}.course-list .product-card-body h3{font-size:21px}.course-list .product-card-body p{font-size:12px}.course-list .card-bottom{margin-top:10px}}
+@media(max-width:760px){.course-list .product-card{min-height:0;grid-template-columns:1fr}.course-list .product-image{height:260px;min-height:0}.course-list .product-card-body{padding:22px 20px}.course-list .product-card-body h3{font-size:21px}.course-list .product-card-body p{font-size:12px}.course-list .card-bottom{margin-top:18px}}

@@ -35,9 +35,22 @@ export async function POST(request: Request) {
   if (!ext) return Response.json({ error: "Formato inválido. Use JPG, PNG ou WebP." }, { status: 400 });
 
   const path = `products/${randomUUID()}.${ext}`;
-  const uploaded = await fetch(`${base.origin}/storage/v1/object/${bucket}/${path}`, {
-    method: "POST", headers: { apikey: secretKey, "Content-Type": file.type, "Cache-Control": "3600" }, body: bytes, cache: "no-store"
-  });
-  if (!uploaded.ok) return Response.json({ error: "Não foi possível enviar a imagem. Confira o bucket público product-images e as credenciais do Supabase." }, { status: 502 });
+  let uploaded: Response;
+  try {
+    uploaded = await fetch(`${base.origin}/storage/v1/object/${bucket}/${path}`, {
+      method: "POST", headers: { apikey: secretKey, "Content-Type": file.type, "Cache-Control": "3600" }, body: bytes, cache: "no-store"
+    });
+  } catch {
+    return Response.json({ error: "Não foi possível conectar ao Supabase Storage. Confira SUPABASE_URL e tente novamente." }, { status: 502 });
+  }
+  if (!uploaded.ok) {
+    const details = await uploaded.json().catch(() => null) as { error?: unknown; message?: unknown } | null;
+    const storageMessage = typeof details?.message === "string" ? details.message : typeof details?.error === "string" ? details.error : "";
+    let error = `O Supabase Storage recusou a imagem (HTTP ${uploaded.status}). Confira as configurações do bucket ${bucket}.`;
+    if (/bucket not found/i.test(storageMessage) || uploaded.status === 404) error = `O bucket ${bucket} não foi encontrado no projeto de SUPABASE_URL. Crie-o como público no Supabase Storage.`;
+    else if (uploaded.status === 401 || uploaded.status === 403) error = "O Supabase recusou a chave de acesso. Confira SUPABASE_SECRET_KEY e se ela pertence ao projeto de SUPABASE_URL.";
+    else if (uploaded.status === 413 || /exceed|too large|size limit/i.test(storageMessage)) error = "A imagem excede o limite de tamanho do bucket no Supabase Storage.";
+    return Response.json({ error }, { status: 502 });
+  }
   return Response.json({ url: `${base.origin}/storage/v1/object/public/${bucket}/${path}` });
 }

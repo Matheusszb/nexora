@@ -15,6 +15,7 @@ export function AdminImageField({ label, name, initialValue, gallery = false, up
   const [value, setValue] = useState(initialValue);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
+  const [previewFailed, setPreviewFailed] = useState(false);
 
   async function upload(files: FileList | null) {
     if (!files?.length) return;
@@ -32,6 +33,7 @@ export function AdminImageField({ label, name, initialValue, gallery = false, up
         if (!response.ok || !result.url) throw new Error(result.error || "Falha no envio da imagem.");
         nextValue = gallery ? [nextValue.trim(), result.url].filter(Boolean).join("\n") : result.url;
         setValue(nextValue);
+        setPreviewFailed(false);
       }
       setMessage(gallery ? "Imagens adicionadas. Salve o produto para concluir." : "Imagem enviada. Salve o produto para concluir.");
     } catch (error) {
@@ -43,12 +45,16 @@ export function AdminImageField({ label, name, initialValue, gallery = false, up
     <label htmlFor={`image-${name}`}>{label}</label>
     {gallery
       ? <textarea id={`image-${name}`} className="textarea" name={name} rows={4} value={value} onChange={event => setValue(event.target.value)} />
-      : <input id={`image-${name}`} className="field" type="url" name={name} value={value} onChange={event => setValue(event.target.value)} />}
+      : <input id={`image-${name}`} className="field" type="url" name={name} value={value} placeholder="https://exemplo.com/imagem.jpg" onChange={event => { setValue(event.target.value); setPreviewFailed(false); }} />}
     <div className="admin-image-upload"><input type="file" accept="image/jpeg,image/png,image/webp" multiple={gallery} disabled={!uploadReady || busy} onChange={event => { void upload(event.target.files); event.target.value = ""; }} aria-label={`Enviar ${label.toLowerCase()}`} />
-      <small>{uploadReady ? "JPG, PNG ou WebP · até 3 MB por imagem. URLs HTTPS anteriores continuam válidas." : "Para enviar arquivos, configure o Supabase Storage na Vercel. URLs HTTPS continuam disponíveis."}</small>
+      <small>{uploadReady ? "JPG, PNG ou WebP · até 3 MB por imagem. Para usar URL, cole o link direto da imagem." : "Para enviar arquivos, configure o Supabase Storage na Vercel. O link direto de uma imagem HTTPS continua disponível."}</small>
     </div>
+    {name === "imageUrl" && <small>Para a capa, prefira 1200 × 800 px (proporção 3:2), com o conteúdo principal centralizado. Imagens de tamanho próximo também funcionam.</small>}
     {message && <p className="admin-image-message" role="status">{message}</p>}
     {busy && <p className="admin-image-message" role="status">Enviando imagem...</p>}
-    {!gallery && value && <div className="admin-image-preview"><img src={value} alt={`Prévia: ${label}`} /></div>}
+    {!gallery && value && <>
+      {previewFailed && <p className="admin-image-message" role="alert">Esta URL não abriu uma imagem. Cole o endereço HTTPS direto do arquivo, não o link da página do site.</p>}
+      {!previewFailed && <div className="admin-image-preview"><img src={value} alt={`Prévia: ${label}`} onError={() => setPreviewFailed(true)} /></div>}
+    </>}
   </div>;
 }
