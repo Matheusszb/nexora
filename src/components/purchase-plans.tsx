@@ -5,7 +5,9 @@ import { CheckoutLink } from "./campaign-capture";
 
 type Props = {
   slug: string;
+  basicName: string;
   basicPrice: string;
+  compareAtPrice?: string;
   basicIncluded: string[];
   basicAvailable: boolean;
   upgradeName?: string | null;
@@ -26,8 +28,9 @@ export function PurchasePlans(props: Props) {
       <div className={hasUpgrade ? "plan-grid" : "plan-grid plan-grid-single"}>
         <article className="plan-card">
           <span className="plan-kicker">PLANO BÁSICO</span>
-          <h3>Material essencial</h3>
+          <h3>{props.basicName}</h3>
           <p>Para começar com o conteúdo principal deste material.</p>
+          {props.compareAtPrice && <span className="plan-previous-price">{props.compareAtPrice}</span>}
           <strong className="plan-price">{props.basicPrice}</strong>
           <ul>{props.basicIncluded.length ? props.basicIncluded.map((item, index) => <li key={index}>{item}</li>) : <li>Material descrito nesta página</li>}</ul>
           {props.basicAvailable ? hasUpgrade ? <button type="button" className="btn btn-outline plan-action" onClick={() => dialog.current?.showModal()}>Escolher básico</button> : <CheckoutLink slug={props.slug} className="btn btn-primary plan-action">Comprar material ↗</CheckoutLink> : <button className="btn btn-outline plan-action" disabled>Compra indisponível</button>}

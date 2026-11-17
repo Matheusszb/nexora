@@ -7,6 +7,7 @@ import { PurchasePlans } from "../src/components/purchase-plans";
 test("oferta com dois planos preserva checkouts separados", () => {
   const html = renderToStaticMarkup(createElement(PurchasePlans, {
     slug: "preparatorio-pmmg",
+    basicName: "Preparatório PMMG",
     basicPrice: "R$ 29,90",
     basicIncluded: ["Apostila digital"],
     basicAvailable: true,

@@ -41,7 +41,7 @@ Para aplicações Node persistentes, a conexão Session pooler funciona na maior
 4. Defina `ADMIN_EMAIL` e `ADMIN_PASSWORD` em um ambiente seguro. A senha deve ter pelo menos 12 caracteres. Execute `npm run admin:create` e remova essas duas variáveis do ambiente depois.
 5. Execute `npm run dev` e abra `http://localhost:3000`.
 
-O banco começa sem produtos ou depoimentos. Cadastre produtos em `/admin/produtos`; a categoria interna necessária ao esquema é criada automaticamente. Todos os produtos publicados aparecem na lista contínua da loja. Sem URL de checkout válida, a compra fica indisponível.
+O banco começa sem produtos ou depoimentos. Cadastre produtos em `/admin/produtos`; a categoria interna necessária ao esquema é criada automaticamente. Todos os produtos publicados aparecem na lista contínua da loja e ganham uma página de vendas em `/concursos/[slug]`. URLs antigas `/produtos/[slug]` redirecionam para a página nova. Sem URL de checkout válida, a compra fica indisponível.
 
 O comando de administrador atualiza a senha caso o e-mail já exista. Em produção, execute-o apenas por canal administrativo seguro. Não coloque essas credenciais em variáveis `NEXT_PUBLIC_*`.
 
@@ -74,7 +74,7 @@ Sem uma instância PostgreSQL, os fluxos que escrevem e leem dados não podem se
 - **Pagamentos e entrega:** webhooks e entrega própria não estão ativos. A Cakto deverá executar a entrega configurada pelo lojista. O painel mostra vendas e faturamento como indisponíveis, sem estimativas.
 - **Pedidos e clientes:** o banco está preparado; o preenchimento depende de webhook oficial autenticado, idempotente e testado. Não existe endpoint público de confirmação de pagamento.
 - **Analytics:** IDs podem ser registrados no painel como preparação, mas nenhum rastreador é carregado até existir implementação de consentimento e eventos. Não registre compra confirmada antes da validação pelo provedor.
-- **Imagens:** o painel recebe URLs HTTPS. Hospedagem privada de arquivos pagos e upload de imagens ainda requerem um serviço de armazenamento configurado.
+- **Imagens:** o painel aceita URLs HTTPS existentes. Para enviar JPG, PNG ou WebP (até 3 MB cada) direto pelo painel, crie um bucket **público** `product-images` em Supabase → Storage e defina `SUPABASE_URL` e `SUPABASE_SECRET_KEY` somente no servidor/Vercel. O upload usa uma rota autenticada, grava arquivos com nome aleatório e preenche a URL pública no formulário; clique em **Salvar produto** depois do envio. A chave secreta nunca deve ser exposta ao navegador. O bucket é destinado apenas a capas e prévias públicas, não a arquivos pagos.
 - **Textos legais:** rascunhos sujeitos a revisão jurídica e aos dados reais da empresa. Não foram inventados CNPJ, endereço, avaliações nem números de compradores.
 
 Para uma futura integração de webhook, obtenha documentação e credenciais oficiais da Cakto. Valide a assinatura/autenticidade antes de gravar eventos, use `IntegrationEvent(provider, providerEventId)` para idempotência, grave pedido e pagamento em uma transação e trate cancelamentos, contestações e reembolsos. Só então ative métricas e eventos de compra confirmada.
