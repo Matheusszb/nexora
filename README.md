@@ -21,6 +21,18 @@ Os modelos incluem administradores e sessões, categorias, produtos e imagens, c
 
 O projeto não foi adaptado para Cloudflare Workers. Prisma com o adaptador `pg` precisa de acesso ao PostgreSQL compatível com a hospedagem escolhida. Não implante como Worker sem revisar a estratégia de banco e o build.
 
+## Banco Supabase
+
+O Supabase pode fornecer o PostgreSQL sem alterar a autenticação atual do painel. Esta aplicação usa Prisma **somente no servidor**; não precisa de `NEXT_PUBLIC_SUPABASE_URL`, chave publicável nem `service_role` para acessar o banco.
+
+1. Crie um projeto Supabase **separado** para a Nexora.
+2. No painel do projeto, abra **Connect** e copie a string **Session pooler** (porta `5432`). Use-a em `DATABASE_URL` e `DIRECT_URL` no arquivo `.env` local. O modelo está em `.env.supabase.example`. A URL direta pode substituir `DIRECT_URL` se sua rede alcançar IPv6.
+3. Use a senha de banco do projeto na string. Codifique caracteres especiais da senha na URL. Nunca coloque a conexão em variável `NEXT_PUBLIC_*` ou no Git.
+4. Execute `npm run db:migrate` e depois `npm run admin:create`. O comando de migração usa `DIRECT_URL` quando ela estiver definida.
+5. A migration inicial habilita RLS em todas as tabelas da aplicação no schema `public`, sem políticas para acesso anônimo. Mantenha a Data API do Supabase desativada se usar apenas Prisma.
+
+Para aplicações Node persistentes, a conexão Session pooler funciona na maioria das redes IPv4. A escolha do pooler para uma hospedagem serverless depende do host e deve ser validada antes do deploy.
+
 ## Desenvolvimento local
 
 1. Copie `.env.example` para `.env`. Troque a senha de exemplo nas variáveis `POSTGRES_PASSWORD` e `DATABASE_URL` pelo mesmo valor forte; se houver caracteres especiais, codifique-os na URL. Configure `NEXT_PUBLIC_SITE_URL`.
