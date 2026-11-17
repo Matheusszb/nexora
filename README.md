@@ -1,6 +1,6 @@
 # Nexora Digital
 
-Loja de materiais digitais para concursos públicos em português brasileiro, com catálogo público e painel administrativo. A aplicação usa **Next.js 16**, **TypeScript**, **PostgreSQL** e **Prisma 7**. O checkout inicial é um redirecionamento validado para a Kiwify, configurado individualmente em cada produto.
+Loja de materiais digitais para concursos públicos em português brasileiro, com catálogo público e painel administrativo. A aplicação usa **Next.js 16**, **TypeScript**, **PostgreSQL** e **Prisma 7**. Cada produto tem uma página de apresentação, plano básico e combo opcional, com links de checkout configurados separadamente.
 
 ## Arquitetura
 
@@ -63,20 +63,21 @@ Sem uma instância PostgreSQL, os fluxos que escrevem e leem dados não podem se
 3. Aplique `npm run db:migrate` antes de iniciar a nova versão.
 4. Execute `npm run build` e `npm run start` em um host Node.js. Garanta HTTPS, atualizações de segurança, logs e monitoramento.
 5. Crie o administrador pelo comando seguro e configure contato, políticas e produtos no painel.
-6. Verifique os links de checkout reais e as condições de entrega na Kiwify.
+6. Verifique os links de checkout reais e as condições de entrega na Cakto.
 
 `NEXT_PUBLIC_SITE_URL` alimenta canonicals, sitemap e dados estruturados. Use o domínio final em produção. O favicon e a logo usam os arquivos originais fornecidos.
 
 ## Integrações e limites atuais
 
-- **Checkout:** URL HTTPS de `kiwify.com.br` ou subdomínio oficial. O servidor valida novamente o destino ao redirecionar. UTMs de campanha são mantidas durante a navegação e repassadas ao checkout.
-- **Pagamentos e entrega:** webhooks e entrega própria não estão ativos. A Kiwify deverá executar a entrega configurada pelo lojista. O painel mostra vendas e faturamento como indisponíveis, sem estimativas.
+- **Checkout:** use um link HTTPS `pay.cakto.com.br` para o plano básico e outro para o combo. Links Kiwify antigos continuam aceitos. O servidor valida novamente o destino ao redirecionar. UTMs de campanha são mantidas durante a navegação e repassadas ao checkout.
+- **Oferta de combo:** cadastre nome, preço maior que o básico, itens adicionais e link próprio no editor do produto. Ao escolher o básico, o visitante recebe uma opção de upgrade e pode continuar com o básico ou selecionar o combo. Sem os dados do combo, a página mostra apenas o básico.
+- **Pagamentos e entrega:** webhooks e entrega própria não estão ativos. A Cakto deverá executar a entrega configurada pelo lojista. O painel mostra vendas e faturamento como indisponíveis, sem estimativas.
 - **Pedidos e clientes:** o banco está preparado; o preenchimento depende de webhook oficial autenticado, idempotente e testado. Não existe endpoint público de confirmação de pagamento.
 - **Analytics:** IDs podem ser registrados no painel como preparação, mas nenhum rastreador é carregado até existir implementação de consentimento e eventos. Não registre compra confirmada antes da validação pelo provedor.
 - **Imagens:** o painel recebe URLs HTTPS. Hospedagem privada de arquivos pagos e upload de imagens ainda requerem um serviço de armazenamento configurado.
 - **Textos legais:** rascunhos sujeitos a revisão jurídica e aos dados reais da empresa. Não foram inventados CNPJ, endereço, avaliações nem números de compradores.
 
-Para uma futura integração de webhook, obtenha documentação e credenciais oficiais da Kiwify. Valide a assinatura/autenticidade antes de gravar eventos, use `IntegrationEvent(provider, providerEventId)` para idempotência, grave pedido e pagamento em uma transação e trate cancelamentos, contestações e reembolsos. Só então ative métricas e eventos de compra confirmada.
+Para uma futura integração de webhook, obtenha documentação e credenciais oficiais da Cakto. Valide a assinatura/autenticidade antes de gravar eventos, use `IntegrationEvent(provider, providerEventId)` para idempotência, grave pedido e pagamento em uma transação e trate cancelamentos, contestações e reembolsos. Só então ative métricas e eventos de compra confirmada.
 
 ## Segurança e dados
 

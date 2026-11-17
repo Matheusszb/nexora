@@ -65,7 +65,7 @@ export async function deleteCategory(form: FormData) {
 function productFromForm(form: FormData) {
   return productSchema.safeParse({
     name: formString(form,"name"), slug: formString(form,"slug"), categoryId: formString(form,"categoryId"),
-    shortDescription: formString(form,"shortDescription"), description: formString(form,"description"), included: formString(form,"included"), audience: formString(form,"audience"), requirements: formString(form,"requirements"), delivery: formString(form,"delivery"), refundPolicy: formString(form,"refundPolicy"), productType: formString(form,"productType"), imageUrl: formString(form,"imageUrl"), socialImageUrl: formString(form,"socialImageUrl"), priceCents: formPrice(form,"price"), compareAtPriceCents: formPrice(form,"compareAtPrice"), checkoutUrl: formString(form,"checkoutUrl"), seoTitle: formString(form,"seoTitle"), metaDescription: formString(form,"metaDescription"), status: formString(form,"status"), featured: formBool(form,"featured")
+    shortDescription: formString(form,"shortDescription"), description: formString(form,"description"), included: formString(form,"included"), audience: formString(form,"audience"), requirements: formString(form,"requirements"), delivery: formString(form,"delivery"), refundPolicy: formString(form,"refundPolicy"), productType: formString(form,"productType"), imageUrl: formString(form,"imageUrl"), socialImageUrl: formString(form,"socialImageUrl"), priceCents: formPrice(form,"price"), compareAtPriceCents: formPrice(form,"compareAtPrice"), checkoutUrl: formString(form,"checkoutUrl"), upgradeName: formString(form,"upgradeName"), upgradeDescription: formString(form,"upgradeDescription"), upgradeIncluded: formString(form,"upgradeIncluded"), upgradePriceCents: formPrice(form,"upgradePrice"), upgradeCheckoutUrl: formString(form,"upgradeCheckoutUrl"), seoTitle: formString(form,"seoTitle"), metaDescription: formString(form,"metaDescription"), status: formString(form,"status"), featured: formBool(form,"featured")
   });
 }
 
@@ -80,7 +80,7 @@ export async function saveProduct(form: FormData) {
   if (!activeCategory || (parsed.data.status === "PUBLISHED" && !activeCategory.active)) redirect(`/admin/produtos/${id || "novo"}?erro=categoria`);
   try {
     const old = id ? await db.product.findUnique({ where: { id } }) : null;
-    const data = { ...parsed.data, publishedAt: parsed.data.status === "PUBLISHED" ? old?.publishedAt || new Date() : null };
+    const data = { ...parsed.data, imageUrl: parsed.data.imageUrl || null, socialImageUrl: parsed.data.socialImageUrl || null, checkoutUrl: parsed.data.checkoutUrl || null, compareAtPriceCents: parsed.data.compareAtPriceCents ?? null, upgradeName: parsed.data.upgradeName || null, upgradePriceCents: parsed.data.upgradePriceCents ?? null, upgradeCheckoutUrl: parsed.data.upgradeCheckoutUrl || null, publishedAt: parsed.data.status === "PUBLISHED" ? old?.publishedAt || new Date() : null };
     await db.$transaction(async tx => {
       const product = id ? await tx.product.update({ where: { id }, data }) : await tx.product.create({ data });
       await tx.productImage.deleteMany({ where: { productId: product.id } });

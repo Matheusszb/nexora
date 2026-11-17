@@ -4,6 +4,7 @@ import { Footer } from "@/components/footer";
 import { CampaignCapture } from "@/components/campaign-capture";
 import { siteUrl } from "@/lib/format";
 import "./globals.css";
+import "./course-list.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),

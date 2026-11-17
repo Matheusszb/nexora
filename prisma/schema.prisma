@@ -84,6 +84,11 @@ model Product {
   priceCents          Int
   compareAtPriceCents Int?
   checkoutUrl         String?
+  upgradeName         String?
+  upgradeDescription  String        @default("")
+  upgradeIncluded     String        @default("")
+  upgradePriceCents   Int?
+  upgradeCheckoutUrl  String?
   seoTitle            String?
   metaDescription     String?
   status              ProductStatus @default(DRAFT)
@@ -124,7 +129,7 @@ model Order {
   id              String      @id @default(cuid())
   productId       String
   customerId      String?
-  provider        String      @default("kiwify")
+  provider        String      @default("cakto")
   providerOrderId String?     @unique
   status          OrderStatus @default(PENDING)
   amountCents     Int

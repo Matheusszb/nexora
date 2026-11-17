@@ -13,9 +13,21 @@ const base = {
 
 test("aceita apenas checkout HTTPS no domínio oficial", () => {
   assert.equal(productSchema.safeParse(base).success, true);
+  assert.equal(productSchema.safeParse({ ...base, checkoutUrl: "https://pay.cakto.com.br/abc123" }).success, true);
   for (const url of ["http://pay.kiwify.com.br/abc", "https://pay.kiwify.com.br.evil.test/abc", "https://evil.test/abc", "javascript:alert(1)"]) {
     assert.equal(productSchema.safeParse({ ...base, checkoutUrl: url }).success, false, url);
   }
+  for (const url of ["http://pay.cakto.com.br/abc", "https://pay.cakto.com.br.evil.test/abc", "https://cakto.com.br.evil.test/abc"]) {
+    assert.equal(productSchema.safeParse({ ...base, checkoutUrl: url }).success, false, url);
+  }
+});
+
+test("combo exige preço maior, benefícios e link oficial", () => {
+  const combo = { ...base, upgradeName: "Combo completo", upgradePriceCents: 6900, upgradeIncluded: "Questões comentadas\nSimulados", upgradeCheckoutUrl: "https://pay.cakto.com.br/combo" };
+  assert.equal(productSchema.safeParse(combo).success, true);
+  assert.equal(productSchema.safeParse({ ...combo, upgradePriceCents: 3900 }).success, false);
+  assert.equal(productSchema.safeParse({ ...combo, upgradeIncluded: "" }).success, false);
+  assert.equal(productSchema.safeParse({ ...combo, upgradeCheckoutUrl: "https://pay.cakto.com.br.evil.test/combo" }).success, false);
 });
 
 test("recusa preço anterior menor que o atual", () => {

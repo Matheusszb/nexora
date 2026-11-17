@@ -12,8 +12,8 @@ export function CampaignCapture() {
   return null;
 }
 
-export function CheckoutLink({ slug, children, className }: { slug: string; children: React.ReactNode; className: string }) {
-  const href = `/comprar/${slug}`;
+export function CheckoutLink({ slug, children, className, plan = "basico" }: { slug: string; children: React.ReactNode; className: string; plan?: "basico" | "combo" }) {
+  const href = `/comprar/${slug}?plano=${plan}`;
   return <a href={href} className={className} onClick={event => {
     try {
       const stored = JSON.parse(sessionStorage.getItem("nexora_campaign") || "{}");
