@@ -8,3 +8,12 @@ export function isAllowedCheckoutUrl(value: string) {
     return false;
   }
 }
+
+export function isCaktoCheckoutUrl(value: string) {
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" && url.hostname.toLowerCase() === "pay.cakto.com.br" && !url.username && !url.password;
+  } catch {
+    return false;
+  }
+}

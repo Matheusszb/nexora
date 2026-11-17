@@ -67,6 +67,12 @@ Sem uma instância PostgreSQL, os fluxos que escrevem e leem dados não podem se
 
 `NEXT_PUBLIC_SITE_URL` alimenta canonicals, sitemap e dados estruturados. Use o domínio final em produção. O favicon e a logo usam os arquivos originais fornecidos.
 
+## Páginas próprias de materiais
+
+A apostila PM-SP 2026 tem uma página criada no código em `/concursos/pmsp-2026`. Seu conteúdo, preço e imagens ficam versionados no projeto; o PDF completo não é publicado, apenas capa e amostras em `public/pmsp-2026/`. O catálogo mostra essa página em vez do antigo cadastro da mesma apostila, e o endereço antigo redireciona para ela.
+
+No painel, abra **Checkouts** e adicione o link HTTPS `pay.cakto.com.br` da apostila. O link é salvo em `SiteSetting` sob `checkout:pmsp-2026`, sem precisar cadastrar o produto novamente. Sem link, o botão de compra permanece indisponível. Para novos materiais feitos sob medida, crie a página e acrescente sua entrada em `src/lib/curated-products.ts`; a área de Checkouts passa a listá-la.
+
 ## Integrações e limites atuais
 
 - **Checkout:** use um link HTTPS `pay.cakto.com.br` para o plano básico e outro para o combo. Links Kiwify antigos continuam aceitos. O servidor valida novamente o destino ao redirecionar. UTMs de campanha são mantidas durante a navegação e repassadas ao checkout.

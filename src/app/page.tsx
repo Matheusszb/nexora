@@ -2,6 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { ProductCard } from "@/components/product-card";
+import { CuratedProductCard } from "@/components/curated-product-card";
+import { curatedProducts, isLegacyPmspProduct } from "@/lib/curated-products";
 import { siteUrl } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -26,7 +28,7 @@ export default async function Home() {
   let heroSubtitle = defaultHeroSubtitle;
   let unavailable = false;
   try {
-    products = await db.product.findMany({ where: { status: "PUBLISHED" }, orderBy: [{ featured: "desc" }, { publishedAt: "desc" }] });
+    products = (await db.product.findMany({ where: { status: "PUBLISHED" }, orderBy: [{ featured: "desc" }, { publishedAt: "desc" }] })).filter(product => !isLegacyPmspProduct(product));
     const customFaq = await db.faq.findMany({ where: { active: true }, orderBy: { sortOrder: "asc" } });
     if (customFaq.length) faqs = customFaq;
     testimonials = await db.testimonial.findMany({ where: { active: true, authorized: true }, orderBy: { sortOrder: "asc" }, take: 3 });
@@ -53,7 +55,7 @@ export default async function Home() {
       <div className="hero-art" aria-hidden="true"><div className="art-ring"/><div className="art-card"><div className="art-card-top"><span>NEXORA / DIGITAL</span><span>01 — 04</span></div><Image src="/nexora-symbol.png" alt="" width={350} height={350} className="art-card-logo"/><div className="art-card-bottom"><span>PREPARE-SE COM FOCO</span><span>↗</span></div></div><i className="art-spark one"/><i className="art-spark two"/></div>
     </div></section>
     <div className="trust-strip"><div className="container"><span className="trust-item"><strong>◇</strong> Todos os materiais</span><span className="trust-item"><strong>⌁</strong> Materiais digitais</span><span className="trust-item"><strong>↗</strong> Checkout oficial</span><span className="trust-item"><strong>✧</strong> Detalhes antes da compra</span></div></div>
-    <section className="section" id="materiais"><div className="container"><div className="section-head"><div><span className="eyebrow">CATÁLOGO NEXORA</span><h2>Todos os materiais</h2></div></div>{products.length ? <div className="product-grid course-list">{products.map(product => <ProductCard key={product.id} product={product}/>)}</div> : <div className="empty-state"><h2>Materiais em preparação</h2><p>{unavailable ? "Não foi possível carregar o catálogo agora. Tente novamente em instantes." : "Os materiais publicados para concursos aparecerão aqui."}</p></div>}</div></section>
+    <section className="section" id="materiais"><div className="container"><div className="section-head"><div><span className="eyebrow">CATÁLOGO NEXORA</span><h2>Todos os materiais</h2></div></div><div className="product-grid course-list">{curatedProducts.map(product => <CuratedProductCard key={product.slug} product={product}/>)}{products.map(product => <ProductCard key={product.id} product={product}/>)}</div>{unavailable && <p className="catalog-count">Os outros materiais estão temporariamente indisponíveis.</p>}</div></section>
     <section className="section benefits"><div className="container"><div className="section-head"><div><span className="eyebrow">ESCOLHA COM CLAREZA</span><h2>Encontre o material certo para estudar</h2></div></div><div className="benefit-grid"><div className="benefit"><span className="benefit-icon">◇</span><h3>Explore todos os materiais</h3><p>Role a lista de materiais e encontre o curso ou apostila para o concurso que você quer prestar.</p></div><div className="benefit"><span className="benefit-icon">⌘</span><h3>Confira o conteúdo</h3><p>Veja o que está incluído, para quem é indicado e quais são os requisitos de cada produto.</p></div><div className="benefit"><span className="benefit-icon">↗</span><h3>Compra com informações</h3><p>Confira preço, entrega e condições antes de seguir para o checkout oficial.</p></div><div className="benefit"><span className="benefit-icon">✧</span><h3>Estude no seu ritmo</h3><p>Escolha o formato de material que se encaixa na sua rotina de preparação.</p></div></div></div></section>
     {testimonials.length > 0 && <section className="section"><div className="container"><div className="section-head"><div><span className="eyebrow">EXPERIÊNCIAS REAIS</span><h2>O que dizem os compradores</h2></div></div><div className="testimonial-grid">{testimonials.map(t => <blockquote key={t.id}><span>“</span><p>{t.quote}</p><cite>{t.name}</cite></blockquote>)}</div></div></section>}
     <section className="section" id="faq"><div className="container"><div className="section-head" style={{justifyContent:"center",textAlign:"center"}}><div><span className="eyebrow">DÚVIDAS FREQUENTES</span><h2>Antes de começar a estudar</h2></div></div><div className="faq-list">{faqs.map(f => <details key={f.question}><summary>{f.question}</summary><p>{f.answer}</p></details>)}</div></div></section>
