@@ -24,6 +24,19 @@ export const curatedProducts = [
     priceCents: 2990,
     compareAtPriceCents: 4990,
     featured: true
+  },
+  {
+    slug: "ibge-recenseador",
+    name: "Apostila IBGE 2026/2027 | Recenseador",
+    productType: "Apostila digital",
+    eyebrow: "PÁGINA EXCLUSIVA · RECENSEADOR IBGE",
+    shortDescription: "Preparação com 34 aulas, banco de 300 questões, três simulados e cronogramas de estudo.",
+    searchTerms: "ibge recenseador censo agropecuário florestal aquícola 2026 2027 cesgranrio",
+    highlights: ["34 aulas", "300 questões", "3 simulados"],
+    imageUrl: "/ibge-recenseador/capa.webp",
+    priceCents: 1990,
+    compareAtPriceCents: null,
+    featured: true
   }
 ] as const;
 
@@ -35,6 +48,10 @@ export function isLegacyPcpeProduct(product: { name: string; slug: string }) {
   return /apostila/i.test(product.name) && /pcpe|pc-pe|polícia civil.*pernambuco/i.test(`${product.name} ${product.slug}`) && /agente/i.test(product.name);
 }
 
+export function isLegacyIbgeProduct(product: { name: string; slug: string }) {
+  return /apostila/i.test(product.name) && /ibge/i.test(`${product.name} ${product.slug}`) && /recenseador/i.test(`${product.name} ${product.slug}`);
+}
+
 export function isLegacyCuratedProduct(product: { name: string; slug: string }) {
-  return isLegacyPmspProduct(product) || isLegacyPcpeProduct(product);
+  return isLegacyPmspProduct(product) || isLegacyPcpeProduct(product) || isLegacyIbgeProduct(product);
 }

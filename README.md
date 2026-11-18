@@ -69,9 +69,9 @@ Sem uma instância PostgreSQL, os fluxos que escrevem e leem dados não podem se
 
 ## Páginas próprias de materiais
 
-A apostila PM-SP 2026 tem uma página criada no código em `/concursos/pmsp-2026`; a apostila PC-PE para Agente tem a sua em `/concursos/pcpe-agente`. Conteúdo, preço e imagens ficam versionados no projeto; os PDFs completos não são publicados, apenas capas e amostras em `public/pmsp-2026/` e `public/pcpe-agente/`. O catálogo mostra essas páginas em vez dos cadastros antigos correspondentes, e os endereços antigos redirecionam para elas.
+As apostilas PM-SP 2026, PC-PE Agente e IBGE Recenseador têm páginas próprias em `/concursos/pmsp-2026`, `/concursos/pcpe-agente` e `/concursos/ibge-recenseador`. Conteúdo, preço e imagens ficam versionados no projeto; os PDFs completos não são publicados, apenas capas e amostras nas pastas correspondentes de `public/`. O catálogo mostra essas páginas em vez dos cadastros antigos correspondentes, e os endereços antigos redirecionam para elas.
 
-No painel, abra **Checkouts** e adicione o link HTTPS `pay.cakto.com.br` da apostila. Os links são salvos em `SiteSetting` sob `checkout:pmsp-2026` e `checkout:pcpe-agente`, sem precisar cadastrar os produtos novamente. Sem link, o botão de compra permanece indisponível. Para novos materiais feitos sob medida, crie a página e acrescente sua entrada em `src/lib/curated-products.ts`; a área de Checkouts passa a listá-la.
+No painel, abra **Checkouts** e adicione o link HTTPS `pay.cakto.com.br` da apostila. Os links são salvos em `SiteSetting` sob `checkout:pmsp-2026`, `checkout:pcpe-agente` e `checkout:ibge-recenseador`, sem precisar cadastrar os produtos novamente. Sem link, o botão de compra permanece indisponível. Para novos materiais feitos sob medida, crie a página e acrescente sua entrada em `src/lib/curated-products.ts`; a área de Checkouts passa a listá-la.
 
 ## Integrações e limites atuais
 
