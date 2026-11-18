@@ -7,5 +7,5 @@
 .course-list .product-card-body p{min-height:0;max-width:580px}
 .course-list .card-bottom{margin-top:auto;padding-top:11px}
 .course-list .price-stack strong{font-size:18px}
-.course-list .card-actions{margin-top:12px}
+.course-list .card-actions{margin-top:auto;padding-top:18px;border-top:1px solid #ffffff21}
 @media(max-width:760px){.course-list .product-card{min-height:0;grid-template-columns:1fr}.course-list .product-image{height:260px;min-height:0}.course-list .product-card-body{padding:22px 20px}.course-list .product-card-body h3{font-size:21px}.course-list .product-card-body p{font-size:12px}.course-list .card-bottom{margin-top:18px}}
