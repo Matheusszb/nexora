@@ -69,9 +69,9 @@ Sem uma instância PostgreSQL, os fluxos que escrevem e leem dados não podem se
 
 ## Páginas próprias de materiais
 
-A apostila PM-SP 2026 tem uma página criada no código em `/concursos/pmsp-2026`. Seu conteúdo, preço e imagens ficam versionados no projeto; o PDF completo não é publicado, apenas capa e amostras em `public/pmsp-2026/`. O catálogo mostra essa página em vez do antigo cadastro da mesma apostila, e o endereço antigo redireciona para ela.
+A apostila PM-SP 2026 tem uma página criada no código em `/concursos/pmsp-2026`; a apostila PC-PE para Agente tem a sua em `/concursos/pcpe-agente`. Conteúdo, preço e imagens ficam versionados no projeto; os PDFs completos não são publicados, apenas capas e amostras em `public/pmsp-2026/` e `public/pcpe-agente/`. O catálogo mostra essas páginas em vez dos cadastros antigos correspondentes, e os endereços antigos redirecionam para elas.
 
-No painel, abra **Checkouts** e adicione o link HTTPS `pay.cakto.com.br` da apostila. O link é salvo em `SiteSetting` sob `checkout:pmsp-2026`, sem precisar cadastrar o produto novamente. Sem link, o botão de compra permanece indisponível. Para novos materiais feitos sob medida, crie a página e acrescente sua entrada em `src/lib/curated-products.ts`; a área de Checkouts passa a listá-la.
+No painel, abra **Checkouts** e adicione o link HTTPS `pay.cakto.com.br` da apostila. Os links são salvos em `SiteSetting` sob `checkout:pmsp-2026` e `checkout:pcpe-agente`, sem precisar cadastrar os produtos novamente. Sem link, o botão de compra permanece indisponível. Para novos materiais feitos sob medida, crie a página e acrescente sua entrada em `src/lib/curated-products.ts`; a área de Checkouts passa a listá-la.
 
 ## Integrações e limites atuais
 

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { db } from "@/lib/db";
 import { ProductCard } from "@/components/product-card";
 import { CuratedProductCard } from "@/components/curated-product-card";
-import { curatedProducts, isLegacyPmspProduct } from "@/lib/curated-products";
+import { curatedProducts, isLegacyCuratedProduct } from "@/lib/curated-products";
 import { siteUrl } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -28,7 +28,7 @@ export default async function Home() {
   let heroSubtitle = defaultHeroSubtitle;
   let unavailable = false;
   try {
-    products = (await db.product.findMany({ where: { status: "PUBLISHED" }, orderBy: [{ featured: "desc" }, { publishedAt: "desc" }] })).filter(product => !isLegacyPmspProduct(product));
+    products = (await db.product.findMany({ where: { status: "PUBLISHED" }, orderBy: [{ featured: "desc" }, { publishedAt: "desc" }] })).filter(product => !isLegacyCuratedProduct(product));
     const customFaq = await db.faq.findMany({ where: { active: true }, orderBy: { sortOrder: "asc" } });
     if (customFaq.length) faqs = customFaq;
     testimonials = await db.testimonial.findMany({ where: { active: true, authorized: true }, orderBy: { sortOrder: "asc" }, take: 3 });

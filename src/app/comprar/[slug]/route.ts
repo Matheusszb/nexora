@@ -9,8 +9,9 @@ export const dynamic = "force-dynamic";
 export async function GET(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   let selectedUrl: string | null | undefined;
-  if (curatedProducts.some(product => product.slug === slug)) {
-    selectedUrl = request.nextUrl.searchParams.get("plano") === "combo" ? null : await getCuratedCheckout(slug);
+  const curated = curatedProducts.find(product => product.slug === slug);
+  if (curated) {
+    selectedUrl = curated.priceCents == null || request.nextUrl.searchParams.get("plano") === "combo" ? null : await getCuratedCheckout(slug);
   } else {
     const product = await db.product.findUnique({ where: { slug }, select: { status: true, checkoutUrl: true, priceCents: true, upgradeName: true, upgradeIncluded: true, upgradePriceCents: true, upgradeCheckoutUrl: true } });
     const comboReady = Boolean(product?.upgradeName && product.upgradeIncluded.trim() && product.upgradePriceCents != null && product.upgradePriceCents > product.priceCents && product.upgradeCheckoutUrl);

@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { AdminShell } from "@/components/admin-shell";
 import { money } from "@/lib/format";
 import { archiveProduct, deleteProduct, duplicateProduct } from "../actions";
-import { curatedProducts, isLegacyPmspProduct } from "@/lib/curated-products";
+import { curatedProducts, isLegacyCuratedProduct } from "@/lib/curated-products";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Produtos", robots: { index: false, follow: false } };
@@ -17,9 +17,9 @@ export default async function ProductsAdmin({ searchParams }: { searchParams: Pr
   const products = (await db.product.findMany({
     where: { ...(status && { status }), ...(q && { name: { contains: q, mode: "insensitive" } }) },
     orderBy: { updatedAt: "desc" }
-  })).filter(product => !isLegacyPmspProduct(product));
+  })).filter(product => !isLegacyCuratedProduct(product));
   return <AdminShell title="Materiais" subtitle="As páginas próprias são criadas para você. No painel, adicione apenas o link da Cakto." email={admin.email}>
-    <section className="admin-panel"><div className="admin-panel-head"><div><h2>Páginas prontas</h2><p>Conteúdo e apresentação preparados fora do cadastro.</p></div><Link className="btn btn-primary" href="/admin/checkouts">Configurar checkout ↗</Link></div>{curatedProducts.map(product => <p key={product.slug}><strong>{product.name}</strong> · {money(product.priceCents)} · <Link className="text-link" href={`/concursos/${product.slug}`} target="_blank">Ver página ↗</Link></p>)}</section>
+    <section className="admin-panel"><div className="admin-panel-head"><div><h2>Páginas prontas</h2><p>Conteúdo e apresentação preparados fora do cadastro.</p></div><Link className="btn btn-primary" href="/admin/checkouts">Configurar checkout ↗</Link></div>{curatedProducts.map(product => <p key={product.slug}><strong>{product.name}</strong> · {product.priceCents == null ? "Preço a confirmar" : money(product.priceCents)} · <Link className="text-link" href={`/concursos/${product.slug}`} target="_blank">Ver página ↗</Link></p>)}</section>
     <div className="admin-actions"><form className="admin-search"><input className="field" name="q" placeholder="Buscar outros produtos" defaultValue={q}/><select className="select" name="status" defaultValue={status || ""}><option value="">Todos os status</option><option value="PUBLISHED">Publicados</option><option value="DRAFT">Rascunhos</option><option value="ARCHIVED">Arquivados</option></select><button className="btn btn-outline">Filtrar</button></form></div>
     {params.salvo && <div className="form-success">Alteração salva com sucesso.</div>}
     {params.erro && <div className="form-error">{params.erro === "historico" ? "Este produto tem histórico de pedidos e não pode ser excluído." : params.erro === "arquive" ? "Arquive o produto publicado antes de excluí-lo." : "Não foi possível concluir a operação."}</div>}

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { db } from "@/lib/db";
 import { ProductCard } from "@/components/product-card";
 import { CuratedProductCard } from "@/components/curated-product-card";
-import { curatedProducts, isLegacyPmspProduct } from "@/lib/curated-products";
+import { curatedProducts, isLegacyCuratedProduct } from "@/lib/curated-products";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
@@ -35,14 +35,14 @@ export default async function Products({ searchParams }: { searchParams: Promise
         : order === "maior-preco" ? [{ priceCents: "desc" }]
         : order === "destaques" ? [{ featured: "desc" }, { publishedAt: "desc" }]
         : [{ publishedAt: "desc" }]
-    })).filter(product => !isLegacyPmspProduct(product));
+    })).filter(product => !isLegacyCuratedProduct(product));
   } catch { unavailable = true; }
   const listing = [
     ...curated.map(product => ({ kind: "curated" as const, product })),
     ...products.map(product => ({ kind: "registered" as const, product }))
   ];
-  if (order === "menor-preco") listing.sort((a, b) => a.product.priceCents - b.product.priceCents);
-  if (order === "maior-preco") listing.sort((a, b) => b.product.priceCents - a.product.priceCents);
+  if (order === "menor-preco") listing.sort((a, b) => (a.product.priceCents ?? Infinity) - (b.product.priceCents ?? Infinity));
+  if (order === "maior-preco") listing.sort((a, b) => (b.product.priceCents ?? -Infinity) - (a.product.priceCents ?? -Infinity));
 
   return <main className="container page-shell" id="materiais">
     <div className="page-intro"><span className="eyebrow">MATERIAIS PARA CONCURSOS</span><h1>Todos os materiais</h1><p>Role a lista e veja os cursos e apostilas disponíveis para a sua preparação.</p></div>
