@@ -21,8 +21,8 @@ export const curatedProducts = [
     searchTerms: "pcpe pc-pe polícia civil pernambuco agente polícia recife 2026 2027",
     highlights: ["46 aulas", "497 questões", "3 simulados"],
     imageUrl: "/pcpe-agente/capa.webp",
-    priceCents: null,
-    compareAtPriceCents: null,
+    priceCents: 2990,
+    compareAtPriceCents: 4990,
     featured: true
   }
 ] as const;
