@@ -1,7 +1,14 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { isCaktoCheckoutUrl } from "../src/lib/checkout";
-import { isLegacyGcmProduct, isLegacyIbgeProduct, isLegacyPcpeProduct, isLegacyPmspProduct } from "../src/lib/curated-products";
+import { curatedProducts, isLegacyGcmProduct, isLegacyIbgeProduct, isLegacyPcpeProduct, isLegacyPmspProduct } from "../src/lib/curated-products";
+
+test("preços das apostilas prioritárias seguem os valores informados para a loja", () => {
+  const prices = Object.fromEntries(curatedProducts.map(product => [product.slug, product.priceCents]));
+  assert.equal(prices["gcm-2026"], 1900);
+  assert.equal(prices["banestes-tecnico-bancario"], 3400);
+  assert.equal(prices["tjsp-escrevente"], 3400);
+});
 
 test("checkout da página própria aceita apenas Cakto HTTPS", () => {
   assert.equal(isCaktoCheckoutUrl("https://pay.cakto.com.br/abc123"), true);

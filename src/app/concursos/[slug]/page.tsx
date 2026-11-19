@@ -2,21 +2,24 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
+import { cache } from "react";
 import { db } from "@/lib/db";
 import { money, siteUrl } from "@/lib/format";
 import { ProductCard } from "@/components/product-card";
+import { isOptimizableProductImage } from "@/lib/product-image";
 import { PurchasePlans } from "@/components/purchase-plans";
 import { isLegacyBanestesProduct, isLegacyGcmProduct, isLegacyIbgeProduct, isLegacyPcpeProduct, isLegacyPmspProduct, isLegacyTjspProduct } from "@/lib/curated-products";
 import "./product-landing.css";
 
 export const dynamic = "force-dynamic";
 type Props = { params: Promise<{ slug: string }> };
+const getProduct = cache((slug: string) => db.product.findUnique({ where: { slug }, include: { images: { orderBy: { sortOrder: "asc" } } } }));
 
 const lines = (value: string) => value.split(/\r?\n/).map(line => line.trim()).filter(Boolean);
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const product = await db.product.findUnique({ where: { slug } });
+  const product = await getProduct(slug);
   if (!product || product.status !== "PUBLISHED") return { title: "Produto indisponível", robots: { index: false } };
   if (isLegacyPmspProduct(product)) return { title: product.name, alternates: { canonical: "/concursos/pmsp-2026" }, robots: { index: false } };
   if (isLegacyPcpeProduct(product)) return { title: product.name, alternates: { canonical: "/concursos/pcpe-agente" }, robots: { index: false } };
@@ -37,7 +40,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ProductPage({ params }: Props) {
   const { slug } = await params;
-  const product = await db.product.findUnique({ where: { slug }, include: { images: { orderBy: { sortOrder: "asc" } } } });
+  const product = await getProduct(slug);
   if (!product) {
     const old = await db.slugRedirect.findUnique({ where: { entity_oldSlug: { entity: "product", oldSlug: slug } } });
     if (old) { const target = await db.product.findUnique({ where: { id: old.targetId } }); if (target?.status === "PUBLISHED") permanentRedirect(`/concursos/${target.slug}`); }
@@ -62,7 +65,7 @@ export default async function ProductPage({ params }: Props) {
     name: product.name,
     description: product.shortDescription,
     image: product.imageUrl || siteUrl("/nexora-logo.png"),
-    brand: { "@type": "Brand", name: "Nexora Digital" },
+    brand: { "@type": "Brand", name: "Nexora Concursos" },
     offers: [
       { "@type": "Offer", name: product.name, priceCurrency: "BRL", price: (product.priceCents / 100).toFixed(2), availability: product.checkoutUrl ? "https://schema.org/InStock" : "https://schema.org/OutOfStock", url: siteUrl(`/concursos/${slug}#planos`) },
       ...(upgradeAvailable ? [{ "@type": "Offer", name: product.upgradeName, priceCurrency: "BRL", price: (product.upgradePriceCents! / 100).toFixed(2), availability: "https://schema.org/InStock", url: siteUrl(`/concursos/${slug}#planos`) }] : [])
@@ -80,14 +83,14 @@ export default async function ProductPage({ params }: Props) {
     <section className="product-hero">
       <div className="container product-hero-inner">
         <div className="sales-hero-copy"><span className="hero-kicker"><i/> {product.productType}</span><h1>{product.name}</h1><p>{product.shortDescription}</p><Link className="btn btn-primary sales-primary-action" href={canBuy ? "#planos" : "#material"}>{canBuy ? "Quero começar a estudar ↗" : "Conhecer o material ↓"}</Link><div className="product-hero-facts"><span>◇ Conteúdo informado no cadastro</span><span>↗ Checkout oficial</span></div></div>
-        <div className="product-hero-media">{product.imageUrl ? <Image src={product.imageUrl} alt={`Capa de ${product.name}`} fill sizes="(max-width: 760px) 90vw, 560px" unoptimized priority /> : <div className="cover-placeholder"><span>{product.productType}</span><strong>{product.name}</strong><small>NEXORA DIGITAL</small></div>}</div>
+        <div className="product-hero-media">{product.imageUrl ? <Image src={product.imageUrl} alt={`Capa de ${product.name}`} fill sizes="(max-width: 760px) 90vw, 560px" unoptimized={!isOptimizableProductImage(product.imageUrl)} priority /> : <div className="cover-placeholder"><span>{product.productType}</span><strong>{product.name}</strong><small>NEXORA DIGITAL</small></div>}</div>
       </div>
     </section>
     <section className="section product-story" id="material"><div className="container sales-story-grid">
-      <div className="sales-story-media">{product.imageUrl ? <Image src={product.imageUrl} alt={`Apresentação de ${product.name}`} fill sizes="(max-width: 760px) 90vw, 500px" unoptimized /> : <div className="cover-placeholder"><span>{product.productType}</span><strong>{product.name}</strong><small>NEXORA DIGITAL</small></div>}</div>
+      <div className="sales-story-media">{product.imageUrl ? <Image src={product.imageUrl} alt={`Apresentação de ${product.name}`} fill sizes="(max-width: 760px) 90vw, 500px" unoptimized={!isOptimizableProductImage(product.imageUrl)} /> : <div className="cover-placeholder"><span>{product.productType}</span><strong>{product.name}</strong><small>NEXORA DIGITAL</small></div>}</div>
       <div><span className="eyebrow">O MATERIAL</span><h2>Conheça o preparatório</h2><p>{product.description || product.shortDescription}</p>{product.delivery && <div className="sales-info-card"><strong>Como funciona</strong><p>{product.delivery}</p></div>}</div>
     </div></section>
-    {product.images.length > 0 && <section className="section product-preview"><div className="container"><div className="section-head product-section-center"><div><span className="eyebrow">VEJA POR DENTRO</span><h2>Imagens do material</h2><p>Explore as imagens cadastradas para este produto.</p></div></div><div className="product-preview-grid">{product.images.map(image => <div className="product-preview-image" key={image.id}><Image src={image.url} alt={image.alt} fill sizes="(max-width: 760px) 80vw, 300px" unoptimized /></div>)}</div></div></section>}
+    {product.images.length > 0 && <section className="section product-preview"><div className="container"><div className="section-head product-section-center"><div><span className="eyebrow">VEJA POR DENTRO</span><h2>Imagens do material</h2><p>Explore as imagens cadastradas para este produto.</p></div></div><div className="product-preview-grid">{product.images.map(image => <div className="product-preview-image" key={image.id}><Image src={image.url} alt={image.alt} fill sizes="(max-width: 760px) 80vw, 300px" unoptimized={!isOptimizableProductImage(image.url)} /></div>)}</div></div></section>}
     {basicIncluded.length > 0 && <section className="section product-included" id="conteudo"><div className="container"><div className="section-head product-section-center"><div><span className="eyebrow">CONTEÚDO DO PREPARATÓRIO</span><h2>O que está incluído</h2><p>Itens informados no cadastro deste material.</p></div></div><div className="sales-included-grid">{basicIncluded.map((item, index) => <div className="sales-included-card" key={index}><span aria-hidden="true">✓</span><p>{item}</p></div>)}</div></div></section>}
     {product.audience && <section className="section sales-audience"><div className="container sales-audience-inner"><span className="eyebrow">PARA QUEM É INDICADO</span><h2>Este material combina com a sua preparação?</h2><p>{product.audience}</p><Link className="text-link" href="#planos">Conhecer os planos ↗</Link></div></section>}
     <PurchasePlans slug={slug} basicName={product.name} basicPrice={money(product.priceCents)} compareAtPrice={product.compareAtPriceCents ? money(product.compareAtPriceCents) : undefined} basicIncluded={basicIncluded} basicAvailable={Boolean(product.checkoutUrl)} upgradeName={product.upgradeName} upgradeDescription={product.upgradeDescription} upgradeIncluded={upgradeIncluded} upgradePrice={product.upgradePriceCents != null ? money(product.upgradePriceCents) : undefined} upgradeDifference={product.upgradePriceCents != null ? money(product.upgradePriceCents - product.priceCents) : undefined} upgradeAvailable={upgradeAvailable}/>

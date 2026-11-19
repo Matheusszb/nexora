@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/db";
@@ -17,6 +17,7 @@ export async function saveCuratedCheckout(form: FormData) {
     db.siteSetting.upsert({ where: { key: `checkout:${slug}` }, create: { key: `checkout:${slug}`, value: url }, update: { value: url } }),
     db.adminLog.create({ data: { adminId: admin.id, action: "update", entity: "checkout", entityId: slug } })
   ]);
+  updateTag("curated-checkout");
   revalidatePath(`/concursos/${slug}`);
   redirect("/admin/checkouts?salvo=1");
 }

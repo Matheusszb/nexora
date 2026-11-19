@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { db } from "@/lib/db";
+import { getDefaultCatalog } from "@/lib/catalog-data";
 import { ProductCard } from "@/components/product-card";
 import { CuratedProductCard } from "@/components/curated-product-card";
 import { curatedProducts, isLegacyCuratedProduct } from "@/lib/curated-products";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = {
-  title: "Materiais para concursos",
-  description: "Veja todos os materiais digitais para concursos públicos em uma lista contínua.",
-  alternates: { canonical: "/produtos" }
-};
+export async function generateMetadata({ searchParams }: { searchParams: Promise<Params> }): Promise<Metadata> {
+  const { q, ordem } = await searchParams;
+  return { title: "Apostilas digitais para concursos públicos", description: "Compare apostilas digitais para GCM, BANESTES, TJSP e outros concursos. Veja capas, conteúdo e preços antes da compra.", alternates: { canonical: "/produtos" }, robots: q || ordem ? { index: false, follow: true } : undefined, openGraph: { title: "Apostilas digitais para concursos | Nexora Concursos", description: "Confira as apostilas disponíveis e escolha o material para seu concurso.", url: "/produtos", type: "website", images: ["/nexora-logo.png"] }, twitter: { card: "summary_large_image", title: "Apostilas digitais para concursos | Nexora Concursos", description: "Compare materiais, capas e preços antes de comprar.", images: ["/nexora-logo.png"] } };
+}
 
 type Params = { q?: string; ordem?: string };
 
@@ -29,13 +29,13 @@ export default async function Products({ searchParams }: { searchParams: Promise
   let unavailable = false;
   const curated = curatedProducts.filter(product => !q || `${product.name} ${product.shortDescription} ${product.searchTerms}`.toLowerCase().includes(q.toLowerCase()));
   try {
-    products = (await db.product.findMany({
+    products = ((q || order !== "recentes") ? await db.product.findMany({
       where,
       orderBy: order === "menor-preco" ? [{ priceCents: "asc" }]
         : order === "maior-preco" ? [{ priceCents: "desc" }]
         : order === "destaques" ? [{ featured: "desc" }, { publishedAt: "desc" }]
         : [{ publishedAt: "desc" }]
-    })).filter(product => !isLegacyCuratedProduct(product));
+    }) : await getDefaultCatalog()).filter(product => !isLegacyCuratedProduct(product));
   } catch { unavailable = true; }
   const listing = [
     ...curated.map(product => ({ kind: "curated" as const, product })),
@@ -45,8 +45,8 @@ export default async function Products({ searchParams }: { searchParams: Promise
   if (order === "maior-preco") listing.sort((a, b) => (b.product.priceCents ?? -Infinity) - (a.product.priceCents ?? -Infinity));
 
   return <main className="container page-shell" id="materiais">
-    <div className="page-intro"><span className="eyebrow">MATERIAIS PARA CONCURSOS</span><h1>Todos os materiais</h1><p>Role a lista e veja os cursos e apostilas disponíveis para a sua preparação.</p></div>
+    <div className="page-intro"><span className="eyebrow">MATERIAIS PARA CONCURSOS</span><h1>Apostilas digitais para concursos</h1><p>Compare capas, conteúdo e preços. Abra a página da apostila para ver amostras, formato e condições de compra.</p></div>
     <div className="catalog-toolbar"><form action="/produtos"><input className="field" type="search" name="q" defaultValue={q} placeholder="Busque por concurso, carreira ou assunto" aria-label="Buscar materiais para concursos"/><select className="select" name="ordem" defaultValue={order} aria-label="Ordenar produtos"><option value="recentes">Mais recentes</option><option value="destaques">Destaques</option><option value="menor-preco">Menor preço</option><option value="maior-preco">Maior preço</option></select><button className="btn btn-primary" type="submit">Buscar</button></form><span className="catalog-count">{listing.length} {listing.length === 1 ? "material" : "materiais"}</span></div>
-    {listing.length ? <div className="product-grid course-list">{listing.map(item => item.kind === "curated" ? <CuratedProductCard key={item.product.slug} product={item.product}/> : <ProductCard key={item.product.id} product={item.product} hidePrice/>)}</div> : <div className="empty-state"><h2>{unavailable ? "Catálogo indisponível" : "Nenhum material encontrado"}</h2><p>{unavailable ? "Tente novamente em instantes." : "Experimente outra busca."}</p>{!unavailable && q && <Link className="text-link" href="/produtos">Limpar busca</Link>}</div>}
+    {listing.length ? <div className="product-grid course-list">{listing.map(item => item.kind === "curated" ? <CuratedProductCard key={item.product.slug} product={item.product}/> : <ProductCard key={item.product.id} product={item.product}/>)}</div> : <div className="empty-state"><h2>{unavailable ? "Catálogo indisponível" : "Nenhum material encontrado"}</h2><p>{unavailable ? "Tente novamente em instantes." : "Experimente outra busca."}</p>{!unavailable && q && <Link className="text-link" href="/produtos">Limpar busca</Link>}</div>}
   </main>;
 }

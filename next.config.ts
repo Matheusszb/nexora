@@ -1,7 +1,21 @@
 import type { NextConfig } from "next";
 
+const storageHostname = (() => {
+  try {
+    const url = new URL(process.env.SUPABASE_URL || "");
+    return url.protocol === "https:" && url.hostname.endsWith(".supabase.co") ? url.hostname : null;
+  } catch { return null; }
+})();
+
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  images: {
+    remotePatterns: storageHostname ? [{
+      protocol: "https",
+      hostname: storageHostname,
+      pathname: "/storage/v1/object/public/product-images/**"
+    }] : []
+  },
   headers: async () => [{
     source: "/:path*",
     headers: [

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { CheckoutLink } from "@/components/campaign-capture";
+import { ProductDiscovery, productBreadcrumbSchema } from "@/components/product-discovery";
+import { MobileCheckoutBar } from "@/components/mobile-checkout-bar";
 import { getCuratedCheckout } from "@/lib/curated-checkout";
 import { curatedProducts } from "@/lib/curated-products";
 import { money, siteUrl } from "@/lib/format";
@@ -11,8 +13,8 @@ export const dynamic = "force-dynamic";
 const product = curatedProducts.find(item => item.slug === "banestes-tecnico-bancario")!;
 
 export const metadata: Metadata = {
-  title: "Apostila BANESTES 2026/2027 | Técnico Bancário",
-  description: "Apostila digital para Técnico Bancário do BANESTES: 44 aulas, 300 questões de treino, três simulados e cronogramas. R$ 34,00.",
+  title: "Apostila BANESTES em PDF | Técnico Bancário 2026/2027",
+  description: "Apostila BANESTES em PDF por R$ 34,00: 44 aulas, 300 questões autorais, 3 simulados e cronogramas. Veja páginas reais antes de comprar.",
   alternates: { canonical: "/concursos/banestes-tecnico-bancario" },
   openGraph: {
     title: "Apostila BANESTES | Técnico Bancário | Nexora Concursos",
@@ -20,7 +22,8 @@ export const metadata: Metadata = {
     images: [siteUrl(product.imageUrl)],
     url: siteUrl("/concursos/banestes-tecnico-bancario"),
     type: "website"
-  }
+  },
+  twitter: { card: "summary_large_image", title: "Apostila BANESTES em PDF | Nexora Concursos", description: product.shortDescription, images: [siteUrl(product.imageUrl)] }
 };
 
 const topics = [
@@ -45,6 +48,7 @@ export default async function BanestesPage() {
     name: product.name,
     description: product.shortDescription,
     image: siteUrl(product.imageUrl),
+    url: siteUrl(`/concursos/${product.slug}`),
     brand: { "@type": "Brand", name: "Nexora Concursos" },
     offers: {
       "@type": "Offer",
@@ -56,13 +60,13 @@ export default async function BanestesPage() {
   };
 
   return <main className="banestes-page">
-    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, "\\u003c") }} />
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([schema, productBreadcrumbSchema(product.name, product.slug)]).replace(/</g, "\\u003c") }} />
     <section className="banestes-hero"><div className="container">
       <nav className="banestes-breadcrumb" aria-label="Caminho"><Link href="/">Início</Link><span>/</span><Link href="/produtos">Materiais</Link><span>/</span><span>BANESTES</span></nav>
       <div className="banestes-hero-grid"><div className="banestes-hero-copy">
         <span className="banestes-kicker">APOSTILA DIGITAL · TÉCNICO BANCÁRIO</span>
-        <h1>Estude para o <em>BANESTES</em> com um plano claro.</h1>
-        <p>Teoria, atividades, questões e simulados em uma apostila digital organizada para sua preparação ao cargo de Técnico Bancário.</p>
+        <h1>Apostila <em>BANESTES</em> em PDF para Técnico Bancário.</h1>
+        <p>São 44 aulas, 300 questões autorais e três simulados em um plano de estudo. Confira as páginas reais antes da compra.</p>
         <div className="banestes-hero-actions"><Link href="#oferta" className="banestes-button">Ver oferta de {money(product.priceCents)}</Link><Link href="#amostra" className="banestes-text-link">Ver páginas do material</Link></div>
         <div className="banestes-hero-foot"><span>PDF digital</span><span>44 aulas</span><span>Edição 2026/2027</span></div>
       </div><div className="banestes-cover"><Image src={product.imageUrl} alt="Arte da apostila BANESTES para Técnico Bancário" width={1100} height={1100} priority sizes="(max-width: 760px) 82vw, 430px" /></div></div>
@@ -79,5 +83,7 @@ export default async function BanestesPage() {
     <section className="banestes-section banestes-offer" id="oferta"><div className="container banestes-offer-grid"><div><span className="banestes-overline">PREPARE SUA PRÓXIMA ETAPA</span><h2>Seu material de estudo em um único PDF.</h2><ul><li>44 aulas com atividades de fixação</li><li>300 questões autorais de treinamento</li><li>Três simulados de 70 questões</li><li>Gabaritos comentados e planos de estudo</li></ul></div><div className="banestes-price-card"><span>APOSTILA DIGITAL · BANESTES</span><strong>{money(product.priceCents)}</strong><p>Pagamento e condições de entrega confirmados na Cakto.</p>{checkout ? <CheckoutLink slug={product.slug} className="banestes-button banestes-buy-button">Quero minha apostila</CheckoutLink> : <button className="banestes-button banestes-buy-button" disabled>Compra disponível em breve</button>}<small>Publicação educacional independente, sem vínculo, autorização ou endosso do BANESTES ou da FCC. Questões autorais para estudo. Não há garantia de aprovação.</small></div></div></section>
 
     <section className="banestes-section banestes-faq"><div className="container banestes-faq-grid"><div><span className="banestes-overline">DÚVIDAS FREQUENTES</span><h2>Antes de começar.</h2></div><div className="banestes-faq-list"><details><summary>Em qual formato recebo a apostila?</summary><p>O material é digital, em PDF. A forma de acesso e entrega é informada no checkout da Cakto.</p></details><details><summary>As questões são de provas oficiais?</summary><p>Não. As questões e os simulados são exercícios autorais de treinamento, com gabaritos comentados.</p></details><details><summary>O material é oficial do BANESTES ou da FCC?</summary><p>Não. É uma publicação independente da Nexora Concursos, sem vínculo ou endosso dessas instituições.</p></details><details><summary>Como acompanho mudanças no concurso?</summary><p>Consulte o edital, suas retificações e os comunicados nos canais oficiais. Datas, regras e legislação podem mudar após a edição da apostila.</p></details></div></div></section>
+    <ProductDiscovery slug={product.slug} />
+    <MobileCheckoutBar slug={product.slug} priceCents={product.priceCents} available={Boolean(checkout)} />
   </main>;
 }

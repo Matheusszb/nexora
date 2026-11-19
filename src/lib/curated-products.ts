@@ -73,7 +73,7 @@ export const curatedProducts = [
     searchTerms: "gcm guarda civil municipal guarda municipal agente 2026 concurso",
     highlights: ["37 aulas", "300 questões", "3 simulados"],
     imageUrl: "/gcm-2026/capa.webp",
-    priceCents: 1990,
+    priceCents: 1900,
     compareAtPriceCents: null,
     featured: true
   }

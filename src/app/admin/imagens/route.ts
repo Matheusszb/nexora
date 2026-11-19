@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import sharp from "sharp";
 import { getAdmin } from "@/lib/auth";
 
 export const runtime = "nodejs";
@@ -34,11 +35,22 @@ export async function POST(request: Request) {
   const ext = imageExtension(bytes, file.type);
   if (!ext) return Response.json({ error: "Formato inválido. Use JPG, PNG ou WebP." }, { status: 400 });
 
-  const path = `products/${randomUUID()}.${ext}`;
+  let optimized: Buffer;
+  try {
+    optimized = await sharp(bytes, { limitInputPixels: 40_000_000 })
+      .rotate()
+      .resize({ width: 1600, height: 1600, fit: "inside", withoutEnlargement: true })
+      .webp({ quality: 82, effort: 4 })
+      .toBuffer();
+  } catch {
+    return Response.json({ error: "A imagem não pôde ser processada. Envie outro arquivo JPG, PNG ou WebP." }, { status: 400 });
+  }
+
+  const path = `products/${randomUUID()}.webp`;
   let uploaded: Response;
   try {
     uploaded = await fetch(`${base.origin}/storage/v1/object/${bucket}/${path}`, {
-      method: "POST", headers: { apikey: secretKey, "Content-Type": file.type, "Cache-Control": "3600" }, body: bytes, cache: "no-store"
+      method: "POST", headers: { apikey: secretKey, "Content-Type": "image/webp", "Cache-Control": "3600" }, body: new Uint8Array(optimized), cache: "no-store"
     });
   } catch {
     return Response.json({ error: "Não foi possível conectar ao Supabase Storage. Confira SUPABASE_URL e tente novamente." }, { status: 502 });

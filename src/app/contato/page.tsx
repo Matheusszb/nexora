@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { db } from "@/lib/db";
+import { siteUrl } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Contato", description: "Entre em contato com a Nexora Digital.", alternates: { canonical: "/contato" } };
+export const metadata: Metadata = { title: "Contato e suporte", description: "Saiba como falar com a Nexora Concursos sobre apostilas digitais, pagamento, acesso e dúvidas antes da compra.", alternates: { canonical: "/contato" }, openGraph: { title: "Contato e suporte | Nexora Concursos", description: "Canais de contato para dúvidas sobre apostilas digitais e compras.", url: siteUrl("/contato"), type: "website", images: [siteUrl("/nexora-logo.png")] }, twitter: { card: "summary_large_image", title: "Contato e suporte | Nexora Concursos", description: "Saiba como falar com a Nexora.", images: [siteUrl("/nexora-logo.png")] } };
 export default async function Contact() {
   let email = "";
   try { email = (await db.siteSetting.findUnique({ where: { key: "contactEmail" } }))?.value || ""; } catch {}

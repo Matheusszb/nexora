@@ -65,13 +65,22 @@ Sem uma instância PostgreSQL, os fluxos que escrevem e leem dados não podem se
 5. Crie o administrador pelo comando seguro e configure contato, políticas e produtos no painel.
 6. Verifique os links de checkout reais e as condições de entrega na Cakto.
 
-`NEXT_PUBLIC_SITE_URL` alimenta canonicals, sitemap e dados estruturados. Use o domínio final em produção. O favicon e a logo usam os arquivos originais fornecidos.
+`NEXT_PUBLIC_SITE_URL` alimenta canonicals, sitemap e dados estruturados. Use o domínio final em produção. O favicon usa o arquivo original fornecido; os arquivos da logo foram redimensionados para reduzir o carregamento.
 
 ## Páginas próprias de materiais
 
 As apostilas TJSP Escrevente, BANESTES Técnico Bancário, PM-SP 2026, PC-PE Agente, IBGE Recenseador e GCM 2026 têm páginas próprias em `/concursos/tjsp-escrevente`, `/concursos/banestes-tecnico-bancario`, `/concursos/pmsp-2026`, `/concursos/pcpe-agente`, `/concursos/ibge-recenseador` e `/concursos/gcm-2026`. Conteúdo, preço e imagens ficam versionados no projeto; os PDFs completos não são publicados, apenas capas e amostras nas pastas correspondentes de `public/`. O catálogo mostra essas páginas em vez dos cadastros antigos correspondentes, e os endereços antigos redirecionam para elas.
 
 No painel, abra **Checkouts** e adicione o link HTTPS `pay.cakto.com.br` da apostila. Os links são salvos em `SiteSetting` sob `checkout:tjsp-escrevente`, `checkout:banestes-tecnico-bancario`, `checkout:pmsp-2026`, `checkout:pcpe-agente`, `checkout:ibge-recenseador` e `checkout:gcm-2026`, sem precisar cadastrar os produtos novamente. Sem link, o botão de compra permanece indisponível. Para novos materiais feitos sob medida, crie a página e acrescente sua entrada em `src/lib/curated-products.ts`; a área de Checkouts passa a listá-la.
+
+## Busca, conteúdo e publicação
+
+- A página inicial, o catálogo, as apostilas e os três guias em `/blog` possuem títulos e descrições específicos, URLs canônicas e conteúdo HTML renderizado no servidor. O sitemap inclui somente as páginas públicas indexáveis; buscas com parâmetros recebem `noindex` e apontam para a página principal do catálogo.
+- Os dados estruturados descrevem a organização, o site, as apostilas, as ofertas, os caminhos de navegação e os artigos. Preços e disponibilidade das ofertas devem corresponder ao checkout configurado. Não há avaliações ou estrelas fictícias.
+- O arquivo `public/googlefcb39b7aac3bdcf9.html` prepara a verificação por arquivo no Google Search Console. Depois de publicar, confira sua resposta no domínio final e envie `/sitemap.xml` ao Search Console. O Bing Webmaster Tools aceita um código de metatag em `BING_SITE_VERIFICATION` configurado no ambiente de build.
+- Confirme na Cakto que a apostila GCM custa **R$ 19,00**, como informado para esta revisão. O código anterior mostrava R$ 19,90; o valor exibido agora foi ajustado. Verifique também os preços e a entrega dos outros materiais antes de publicar.
+- Revise o e-mail de suporte e os textos legais no painel antes de promover a loja. As páginas legais continuam identificadas como rascunho e fora do índice até haver dados reais e revisão jurídica.
+- GA4 e Meta Pixel continuam desligados. Para ativá-los, é necessário configurar IDs válidos, implementar consentimento e testar eventos de visualização, clique e início de checkout. Um evento `purchase` só deve ser enviado após confirmação autenticada e idempotente do provedor de pagamento; o clique no botão não é uma venda.
 
 ## Integrações e limites atuais
 
@@ -80,7 +89,7 @@ No painel, abra **Checkouts** e adicione o link HTTPS `pay.cakto.com.br` da apos
 - **Pagamentos e entrega:** webhooks e entrega própria não estão ativos. A Cakto deverá executar a entrega configurada pelo lojista. O painel mostra vendas e faturamento como indisponíveis, sem estimativas.
 - **Pedidos e clientes:** o banco está preparado; o preenchimento depende de webhook oficial autenticado, idempotente e testado. Não existe endpoint público de confirmação de pagamento.
 - **Analytics:** IDs podem ser registrados no painel como preparação, mas nenhum rastreador é carregado até existir implementação de consentimento e eventos. Não registre compra confirmada antes da validação pelo provedor.
-- **Imagens:** o painel aceita URLs HTTPS existentes. Para enviar JPG, PNG ou WebP (até 3 MB cada) direto pelo painel, crie um bucket **público** `product-images` em Supabase → Storage e defina `SUPABASE_URL` e `SUPABASE_SECRET_KEY` somente no servidor/Vercel. O upload usa uma rota autenticada, grava arquivos com nome aleatório e preenche a URL pública no formulário; clique em **Salvar produto** depois do envio. A chave secreta nunca deve ser exposta ao navegador. O bucket é destinado apenas a capas e prévias públicas, não a arquivos pagos.
+- **Imagens:** o painel aceita URLs HTTPS existentes. Para enviar JPG, PNG ou WebP (até 3 MB cada) direto pelo painel, crie um bucket **público** `product-images` em Supabase → Storage e defina `SUPABASE_URL` e `SUPABASE_SECRET_KEY` somente no servidor/Vercel. O upload usa uma rota autenticada, reduz a imagem para no máximo 1600 px, converte para WebP, grava um arquivo com nome aleatório e preenche a URL pública no formulário; clique em **Salvar produto** depois do envio. Imagens desse bucket também são servidas em tamanhos adequados para cada tela. A chave secreta nunca deve ser exposta ao navegador. O bucket é destinado apenas a capas e prévias públicas, não a arquivos pagos.
 - **Textos legais:** rascunhos sujeitos a revisão jurídica e aos dados reais da empresa. Não foram inventados CNPJ, endereço, avaliações nem números de compradores.
 
 Para uma futura integração de webhook, obtenha documentação e credenciais oficiais da Cakto. Valide a assinatura/autenticidade antes de gravar eventos, use `IntegrationEvent(provider, providerEventId)` para idempotência, grave pedido e pagamento em uma transação e trate cancelamentos, contestações e reembolsos. Só então ative métricas e eventos de compra confirmada.

@@ -2,7 +2,7 @@
 
 import bcrypt from "bcryptjs";
 import { createHash } from "node:crypto";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { clearSession, createSession, requireAdmin } from "@/lib/auth";
@@ -65,6 +65,7 @@ export async function saveProduct(form: FormData) {
       await tx.adminLog.create({ data: { adminId: admin.id, action: id ? "update" : "create", entity: "product", entityId: product.id } });
     });
   } catch (error) { redirect(`/admin/produtos/${id || "novo"}?erro=${(error as { code?: string }).code === "P2002" ? "duplicado" : "salvar"}`); }
+  updateTag("home-data"); updateTag("catalog-products");
   revalidatePath("/"); revalidatePath("/produtos");
   redirect("/admin/produtos?salvo=1");
 }
@@ -74,6 +75,7 @@ export async function archiveProduct(form: FormData) {
   const id = formString(form,"id");
   await db.product.update({ where: { id }, data: { status: "ARCHIVED", publishedAt: null } });
   await db.adminLog.create({ data: { adminId: admin.id, action: "archive", entity: "product", entityId: id } });
+  updateTag("home-data"); updateTag("catalog-products");
   revalidatePath("/"); revalidatePath("/produtos");
   redirect("/admin/produtos?salvo=1");
 }
@@ -86,6 +88,7 @@ export async function deleteProduct(form: FormData) {
   if (await db.order.count({ where: { productId: id } })) redirect("/admin/produtos?erro=historico");
   await db.product.delete({ where: { id } });
   await db.adminLog.create({ data: { adminId: admin.id, action: "delete", entity: "product", entityId: id } });
+  updateTag("home-data"); updateTag("catalog-products");
   revalidatePath("/"); revalidatePath("/produtos");
   redirect("/admin/produtos?salvo=1");
 }
@@ -108,6 +111,7 @@ export async function saveSetting(form: FormData) {
   if (key === "contactEmail" && value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) redirect("/admin/configuracoes?erro=validacao");
   await db.siteSetting.upsert({ where: { key }, create: { key, value }, update: { value } });
   await db.adminLog.create({ data: { adminId: admin.id, action: "update", entity: "setting", entityId: key } });
+  updateTag("home-data");
   revalidatePath("/"); revalidatePath("/contato");
   redirect("/admin/configuracoes?salvo=1");
 }
@@ -122,7 +126,7 @@ export async function saveFaq(form: FormData) {
   const data = { question, answer, sortOrder, active: formBool(form,"active") };
   const faq = id ? await db.faq.update({ where: { id }, data }) : await db.faq.create({ data });
   await db.adminLog.create({ data: { adminId: admin.id, action: id ? "update" : "create", entity: "faq", entityId: faq.id } });
-  revalidatePath("/");
+  updateTag("home-data"); revalidatePath("/");
   redirect("/admin/conteudo?salvo=1");
 }
 
@@ -130,7 +134,7 @@ export async function deleteFaq(form: FormData) {
   const admin = await requireAdmin(); const id = formString(form,"id");
   await db.faq.delete({ where: { id } });
   await db.adminLog.create({ data: { adminId: admin.id, action: "delete", entity: "faq", entityId: id } });
-  revalidatePath("/"); redirect("/admin/conteudo?salvo=1");
+  updateTag("home-data"); revalidatePath("/"); redirect("/admin/conteudo?salvo=1");
 }
 
 export async function saveTestimonial(form: FormData) {
@@ -140,12 +144,12 @@ export async function saveTestimonial(form: FormData) {
   const data = { name, quote, authorized: true, active: formBool(form,"active"), sortOrder: Math.max(0, Number(formString(form,"sortOrder")) || 0) };
   const testimonial = id ? await db.testimonial.update({ where: { id }, data }) : await db.testimonial.create({ data });
   await db.adminLog.create({ data: { adminId: admin.id, action: id ? "update" : "create", entity: "testimonial", entityId: testimonial.id } });
-  revalidatePath("/"); redirect("/admin/conteudo?salvo=1");
+  updateTag("home-data"); revalidatePath("/"); redirect("/admin/conteudo?salvo=1");
 }
 
 export async function deleteTestimonial(form: FormData) {
   const admin = await requireAdmin(); const id = formString(form,"id");
   await db.testimonial.delete({ where: { id } });
   await db.adminLog.create({ data: { adminId: admin.id, action: "delete", entity: "testimonial", entityId: id } });
-  revalidatePath("/"); redirect("/admin/conteudo?salvo=1");
+  updateTag("home-data"); revalidatePath("/"); redirect("/admin/conteudo?salvo=1");
 }

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { CheckoutLink } from "@/components/campaign-capture";
+import { ProductDiscovery, productBreadcrumbSchema } from "@/components/product-discovery";
+import { MobileCheckoutBar } from "@/components/mobile-checkout-bar";
 import { getCuratedCheckout } from "@/lib/curated-checkout";
 import { curatedProducts } from "@/lib/curated-products";
 import { money, siteUrl } from "@/lib/format";
@@ -11,8 +13,8 @@ export const dynamic = "force-dynamic";
 const product = curatedProducts.find(item => item.slug === "gcm-2026")!;
 
 export const metadata: Metadata = {
-  title: "Apostila GCM 2026 para Guarda Civil Municipal",
-  description: "Apostila digital de preparação geral para Guarda Civil Municipal: 37 aulas em oito módulos, 300 questões de treino, três simulados e cronogramas.",
+  title: "Apostila GCM em PDF | Guarda Civil Municipal 2026",
+  description: "Apostila GCM em PDF por R$ 19,00: 37 aulas, 300 questões autorais, 3 simulados e cronogramas. Veja amostras antes de comprar.",
   alternates: { canonical: "/concursos/gcm-2026" },
   openGraph: {
     title: "Apostila GCM 2026 | Guarda Civil Municipal | Nexora Concursos",
@@ -20,7 +22,8 @@ export const metadata: Metadata = {
     images: [siteUrl(product.imageUrl)],
     url: siteUrl("/concursos/gcm-2026"),
     type: "website"
-  }
+  },
+  twitter: { card: "summary_large_image", title: "Apostila GCM em PDF | Nexora Concursos", description: product.shortDescription, images: [siteUrl(product.imageUrl)] }
 };
 
 const subjects = [
@@ -45,19 +48,20 @@ export default async function GcmPage() {
     name: product.name,
     description: product.shortDescription,
     image: siteUrl(product.imageUrl),
+    url: siteUrl(`/concursos/${product.slug}`),
     brand: { "@type": "Brand", name: "Nexora Concursos" },
     offers: { "@type": "Offer", priceCurrency: "BRL", price: (product.priceCents / 100).toFixed(2), availability: checkout ? "https://schema.org/InStock" : "https://schema.org/OutOfStock", url: siteUrl(`/concursos/${product.slug}#oferta`) }
   };
 
   return <main className="gcm-page">
-    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, "\\u003c") }} />
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([schema, productBreadcrumbSchema(product.name, product.slug)]).replace(/</g, "\\u003c") }} />
     <section className="gcm-hero"><div className="container">
       <nav className="gcm-breadcrumb" aria-label="Caminho"><Link href="/">Início</Link><span>/</span><Link href="/produtos">Materiais</Link><span>/</span><span>Guarda Civil Municipal</span></nav>
       <div className="gcm-hero-grid"><div className="gcm-hero-copy">
         <span className="gcm-kicker"><i aria-hidden="true"/> APOSTILA DIGITAL · PREPARAÇÃO GCM 2026</span>
-        <h1>Construa sua base para a <em>Guarda Civil Municipal.</em></h1>
-        <p>Um caminho de estudo com teoria, legislação, situações de atuação, questões e simulados para avançar com mais clareza.</p>
-        <div className="gcm-hero-actions"><Link className="gcm-button" href="#amostra">Ver páginas da apostila <span aria-hidden="true">↗</span></Link><Link className="gcm-hero-link" href="#conteudo">Explorar o conteúdo ↓</Link></div>
+        <h1>Apostila GCM em PDF para <em>Guarda Civil Municipal.</em></h1>
+        <p>Preparação geral com 37 aulas, 300 questões autorais e três simulados. Confira o conteúdo e as amostras antes de comprar.</p>
+        <div className="gcm-hero-actions"><Link className="gcm-button" href="#oferta">Ver oferta de {money(product.priceCents)} <span aria-hidden="true">↗</span></Link><Link className="gcm-hero-link" href="#amostra">Ver páginas da apostila ↓</Link></div>
         <div className="gcm-hero-foot"><span>PDF digital</span><span>37 aulas</span><span>Preparação geral</span></div>
       </div><div className="gcm-cover-stage"><div className="gcm-cover-frame"><Image src={product.imageUrl} alt="Capa da apostila GCM 2026 para Guarda Civil Municipal" width={1100} height={1100} priority sizes="(max-width: 760px) 88vw, 520px" /></div><span>EDIÇÃO 2026 <b>·</b> NEXORA CONCURSOS</span></div></div>
     </div></section>
@@ -73,5 +77,7 @@ export default async function GcmPage() {
     <section className="gcm-section gcm-offer" id="oferta"><div className="container gcm-offer-grid"><div><span className="gcm-overline">SEU PRÓXIMO PASSO</span><h2>Organize sua preparação para <em>GCM.</em></h2><p>Uma apostila digital para reunir teoria, prática e ferramentas de revisão em um mesmo plano de estudo.</p><ul><li>37 aulas em oito módulos</li><li>Banco de 300 questões autorais com gabaritos comentados</li><li>Três simulados gerais de 60 questões</li><li>Cronogramas de 30, 60 e 90 dias</li></ul></div><div className="gcm-price-card"><span>APOSTILA DIGITAL · GUARDA CIVIL MUNICIPAL</span><strong>{money(product.priceCents)}</strong><p>Pagamento e condições de entrega confirmados na Cakto.</p>{checkout ? <CheckoutLink slug={product.slug} className="gcm-button gcm-buy-button">Quero minha apostila ↗</CheckoutLink> : <button className="gcm-button gcm-buy-button" disabled>Compra disponível em breve</button>}<small>Publicação educacional independente, sem vínculo oficial com prefeitura, guarda ou banca. Este material é geral e não substitui o edital do município escolhido.</small></div></div></section>
 
     <section className="gcm-section gcm-faq"><div className="container gcm-faq-grid"><div><span className="gcm-overline">DÚVIDAS FREQUENTES</span><h2>Antes de começar.</h2></div><div className="gcm-faq-list"><details><summary>A apostila serve para qual cidade?</summary><p>É uma preparação geral para GCM. Confira o edital da cidade em que pretende concorrer e compare disciplinas, legislação municipal e etapas exigidas.</p></details><details><summary>Em qual formato recebo o material?</summary><p>O material é digital, em PDF. A forma de acesso e entrega é informada no checkout da Cakto.</p></details><details><summary>As questões são de provas oficiais?</summary><p>Não. O banco de 300 questões e os simulados são exercícios autorais de treinamento, acompanhados de gabaritos comentados.</p></details><details><summary>O conteúdo legal pode mudar?</summary><p>Sim. Consulte sempre as versões oficiais atualizadas das leis e as retificações do edital municipal antes da prova.</p></details></div></div></section>
+    <ProductDiscovery slug={product.slug} />
+    <MobileCheckoutBar slug={product.slug} priceCents={product.priceCents} available={Boolean(checkout)} />
   </main>;
 }
