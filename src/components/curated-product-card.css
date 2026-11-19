@@ -10,6 +10,7 @@
 .curated-card-tags{display:flex;flex-wrap:wrap;gap:8px;margin:23px 0}
 .curated-card-tags span{border:1px solid #52647a;border-radius:30px;padding:7px 10px;font-size:11px;color:#cad5e1}
 .curated-card-bottom{display:flex;align-items:center;justify-content:space-between;gap:20px;border-top:1px solid #ffffff21;padding-top:17px;margin-top:auto}
+.curated-card-bottom-no-price{justify-content:flex-end}
 .curated-card-bottom strong{font-size:22px;color:#fff;white-space:nowrap}
 .curated-card-bottom a{color:#fff;background:#c72935;padding:11px 15px;border-radius:8px;font-size:12px;font-weight:800}
 .curated-card-bottom a:hover{background:#e23541}
