@@ -6,7 +6,7 @@ import { db } from "@/lib/db";
 import { money, siteUrl } from "@/lib/format";
 import { ProductCard } from "@/components/product-card";
 import { PurchasePlans } from "@/components/purchase-plans";
-import { isLegacyIbgeProduct, isLegacyPcpeProduct, isLegacyPmspProduct } from "@/lib/curated-products";
+import { isLegacyBanestesProduct, isLegacyGcmProduct, isLegacyIbgeProduct, isLegacyPcpeProduct, isLegacyPmspProduct, isLegacyTjspProduct } from "@/lib/curated-products";
 import "./product-landing.css";
 
 export const dynamic = "force-dynamic";
@@ -21,6 +21,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (isLegacyPmspProduct(product)) return { title: product.name, alternates: { canonical: "/concursos/pmsp-2026" }, robots: { index: false } };
   if (isLegacyPcpeProduct(product)) return { title: product.name, alternates: { canonical: "/concursos/pcpe-agente" }, robots: { index: false } };
   if (isLegacyIbgeProduct(product)) return { title: product.name, alternates: { canonical: "/concursos/ibge-recenseador" }, robots: { index: false } };
+  if (isLegacyGcmProduct(product)) return { title: product.name, alternates: { canonical: "/concursos/gcm-2026" }, robots: { index: false } };
+  if (isLegacyBanestesProduct(product)) return { title: product.name, alternates: { canonical: "/concursos/banestes-tecnico-bancario" }, robots: { index: false } };
+  if (isLegacyTjspProduct(product)) return { title: product.name, alternates: { canonical: "/concursos/tjsp-escrevente" }, robots: { index: false } };
   const title = product.seoTitle || product.name;
   const description = product.metaDescription || product.shortDescription;
   const url = `/concursos/${product.slug}`;
@@ -44,6 +47,9 @@ export default async function ProductPage({ params }: Props) {
   if (isLegacyPmspProduct(product)) permanentRedirect("/concursos/pmsp-2026");
   if (isLegacyPcpeProduct(product)) permanentRedirect("/concursos/pcpe-agente");
   if (isLegacyIbgeProduct(product)) permanentRedirect("/concursos/ibge-recenseador");
+  if (isLegacyGcmProduct(product)) permanentRedirect("/concursos/gcm-2026");
+  if (isLegacyBanestesProduct(product)) permanentRedirect("/concursos/banestes-tecnico-bancario");
+  if (isLegacyTjspProduct(product)) permanentRedirect("/concursos/tjsp-escrevente");
   const related = await db.product.findMany({ where: { status: "PUBLISHED", id: { not: product.id } }, take: 3, orderBy: { publishedAt: "desc" } });
   const basicIncluded = lines(product.included);
   const upgradeIncluded = lines(product.upgradeIncluded);

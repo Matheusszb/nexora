@@ -8,7 +8,7 @@ import { money, siteUrl } from "@/lib/format";
 import "./pmsp.css";
 
 export const dynamic = "force-dynamic";
-const product = curatedProducts[0];
+const product = curatedProducts.find(item => item.slug === "pmsp-2026")!;
 
 export const metadata: Metadata = {
   title: "Apostila PM-SP 2026 para Soldado PM",

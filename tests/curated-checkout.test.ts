@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { isCaktoCheckoutUrl } from "../src/lib/checkout";
-import { isLegacyIbgeProduct, isLegacyPcpeProduct, isLegacyPmspProduct } from "../src/lib/curated-products";
+import { isLegacyGcmProduct, isLegacyIbgeProduct, isLegacyPcpeProduct, isLegacyPmspProduct } from "../src/lib/curated-products";
 
 test("checkout da página própria aceita apenas Cakto HTTPS", () => {
   assert.equal(isCaktoCheckoutUrl("https://pay.cakto.com.br/abc123"), true);
@@ -22,4 +22,6 @@ test("produtos antigos das apostilas são substituídos pelas páginas próprias
   assert.equal(isLegacyPcpeProduct({ name: "Curso PC-PE — Agente de Polícia", slug: "curso-pcpe" }), false);
   assert.equal(isLegacyIbgeProduct({ name: "Apostila IBGE 2026/2027 — Recenseador", slug: "apostila-ibge-recenseador" }), true);
   assert.equal(isLegacyIbgeProduct({ name: "Curso IBGE — Recenseador", slug: "curso-ibge-recenseador" }), false);
+  assert.equal(isLegacyGcmProduct({ name: "Apostila GCM 2026 — Guarda Civil Municipal", slug: "apostila-gcm" }), true);
+  assert.equal(isLegacyGcmProduct({ name: "Curso GCM 2026", slug: "curso-gcm" }), false);
 });
