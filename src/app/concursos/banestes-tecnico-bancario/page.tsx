@@ -65,7 +65,7 @@ export default async function BanestesPage() {
         <p>Teoria, atividades, questões e simulados em uma apostila digital organizada para sua preparação ao cargo de Técnico Bancário.</p>
         <div className="banestes-hero-actions"><Link href="#oferta" className="banestes-button">Ver oferta de {money(product.priceCents)}</Link><Link href="#amostra" className="banestes-text-link">Ver páginas do material</Link></div>
         <div className="banestes-hero-foot"><span>PDF digital</span><span>44 aulas</span><span>Edição 2026/2027</span></div>
-      </div><div className="banestes-cover"><Image src={product.imageUrl} alt="Capa da apostila BANESTES para Técnico Bancário" width={833} height={1179} priority sizes="(max-width: 760px) 82vw, 430px" /></div></div>
+      </div><div className="banestes-cover"><Image src={product.imageUrl} alt="Arte da apostila BANESTES para Técnico Bancário" width={1100} height={1100} priority sizes="(max-width: 760px) 82vw, 430px" /></div></div>
     </div></section>
 
     <section className="banestes-stats" aria-label="O que contém a apostila"><div className="container banestes-stats-grid"><div><strong>44</strong><span>aulas em nove disciplinas</span></div><div><strong>300</strong><span>questões de treino</span></div><div><strong>03</strong><span>simulados de 70 questões</span></div><div><strong>230</strong><span>páginas no PDF</span></div></div></section>

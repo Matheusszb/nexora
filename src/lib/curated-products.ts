@@ -7,7 +7,7 @@ export const curatedProducts = [
     shortDescription: "Preparação em nove disciplinas com 44 aulas, 300 questões de treino, três simulados e cronogramas de estudo.",
     searchTerms: "banestes banco do estado do espírito santo tecnico técnico bancário fcc 2026 2027",
     highlights: ["44 aulas", "300 questões", "3 simulados"],
-    imageUrl: "/banestes-tecnico-bancario/capa.webp",
+    imageUrl: "/banestes-tecnico-bancario/cartaz.webp",
     priceCents: 3400,
     compareAtPriceCents: null,
     featured: true
