@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { CampaignCapture } from "@/components/campaign-capture";
+import { MetaPixel } from "@/components/meta-pixel";
 import { siteUrl } from "@/lib/format";
 import "./globals.css";
 import "./course-list.css";
@@ -17,5 +19,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="pt-BR"><body><CampaignCapture/><Header />{children}<Footer /></body></html>;
+  return <html lang="pt-BR"><body><CampaignCapture/><Suspense fallback={null}><MetaPixel /></Suspense><Header />{children}<Footer /></body></html>;
 }

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { CheckoutLink } from "@/components/campaign-capture";
+import { MetaProductView } from "@/components/meta-product-view";
 import { ProductDiscovery, productBreadcrumbSchema } from "@/components/product-discovery";
 import { MobileCheckoutBar } from "@/components/mobile-checkout-bar";
 import { getCuratedCheckout } from "@/lib/curated-checkout";
@@ -59,7 +60,8 @@ export default async function TjspPage() {
     }
   };
 
-  return <main className="tjsp-page">
+  return <main className="tjsp-page" data-meta-product-id={product.slug} data-meta-product-name={product.name} data-meta-price-cents={product.priceCents}>
+    <MetaProductView slug={product.slug} />
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([schema, productBreadcrumbSchema(product.name, product.slug)]).replace(/</g, "\\u003c") }} />
     <section className="tjsp-hero"><div className="container">
       <nav className="tjsp-breadcrumb" aria-label="Caminho"><Link href="/">Início</Link><span>/</span><Link href="/produtos">Materiais</Link><span>/</span><span>TJSP</span></nav>

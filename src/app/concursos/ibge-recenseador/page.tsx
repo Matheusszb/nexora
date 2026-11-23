@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { CheckoutLink } from "@/components/campaign-capture";
+import { MetaProductView } from "@/components/meta-product-view";
 import { getCuratedCheckout } from "@/lib/curated-checkout";
 import { curatedProducts } from "@/lib/curated-products";
 import { money, siteUrl } from "@/lib/format";
@@ -48,7 +49,8 @@ export default async function IbgeRecenseadorPage() {
     offers: { "@type": "Offer", priceCurrency: "BRL", price: (product.priceCents / 100).toFixed(2), availability: checkout ? "https://schema.org/InStock" : "https://schema.org/OutOfStock", url: siteUrl(`/concursos/${product.slug}#oferta`) }
   };
 
-  return <main className="ibge-page">
+  return <main className="ibge-page" data-meta-product-id={product.slug} data-meta-product-name={product.name} data-meta-price-cents={product.priceCents}>
+    <MetaProductView slug={product.slug} />
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, "\\u003c") }} />
     <section className="ibge-hero">
       <div className="container">

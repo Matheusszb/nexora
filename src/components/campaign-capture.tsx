@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { trackCheckoutStart } from "@/lib/meta-pixel";
 
 const keys = ["utm_source","utm_medium","utm_campaign","utm_content","utm_term"];
 export function CampaignCapture() {
@@ -23,7 +24,11 @@ export function CheckoutLink({ slug, children, className, plan = "basico" }: { s
         const value = current.get(key) || stored[key];
         if (typeof value === "string" && value.length <= 200) target.searchParams.set(key, value);
       }
-      event.preventDefault(); window.location.assign(target.toString());
+      event.preventDefault();
+      // Give the browser a brief chance to dispatch the Pixel request before leaving the site.
+      const tracked = trackCheckoutStart(slug, plan);
+      if (tracked) window.setTimeout(() => window.location.assign(target.toString()), 180);
+      else window.location.assign(target.toString());
     } catch { /* O link padrão continua funcionando. */ }
   }}>{children}</a>;
 }

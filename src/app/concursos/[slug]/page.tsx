@@ -8,6 +8,7 @@ import { money, siteUrl } from "@/lib/format";
 import { ProductCard } from "@/components/product-card";
 import { isOptimizableProductImage } from "@/lib/product-image";
 import { PurchasePlans } from "@/components/purchase-plans";
+import { MetaProductView } from "@/components/meta-product-view";
 import { isLegacyBanestesProduct, isLegacyGcmProduct, isLegacyIbgeProduct, isLegacyPcpeProduct, isLegacyPmspProduct, isLegacyTjspProduct } from "@/lib/curated-products";
 import "./product-landing.css";
 
@@ -77,7 +78,8 @@ export default async function ProductPage({ params }: Props) {
     product.requirements && { question: "Qual é o formato e quais são os requisitos?", answer: product.requirements },
     product.refundPolicy && { question: "Como funciona o acesso e o reembolso?", answer: product.refundPolicy }
   ].filter((item): item is { question: string; answer: string } => Boolean(item));
-  return <main className="product-landing">
+  return <main className="product-landing" data-meta-product-id={product.slug} data-meta-product-name={product.name} data-meta-price-cents={product.priceCents} data-meta-combo-price-cents={upgradeAvailable ? product.upgradePriceCents! : undefined}>
+    <MetaProductView slug={product.slug} />
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([schema, breadcrumb]).replace(/</g, "\\u003c") }} />
     <div className="container"><nav className="breadcrumbs product-breadcrumbs" aria-label="Caminho"><Link href="/">Início</Link><span>/</span><Link href="/produtos">Materiais</Link><span>/</span><span>{product.name}</span></nav></div>
     <section className="product-hero">

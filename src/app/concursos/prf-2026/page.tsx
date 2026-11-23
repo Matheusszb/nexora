@@ -4,6 +4,7 @@ import Link from "next/link";
 import { CheckoutLink } from "@/components/campaign-capture";
 import { ProductDiscovery, productBreadcrumbSchema } from "@/components/product-discovery";
 import { MobileCheckoutBar } from "@/components/mobile-checkout-bar";
+import { MetaProductView } from "@/components/meta-product-view";
 import { getCuratedCheckout } from "@/lib/curated-checkout";
 import { curatedProducts } from "@/lib/curated-products";
 import { money, siteUrl } from "@/lib/format";
@@ -53,7 +54,8 @@ export default async function PrfPage() {
     offers: { "@type": "Offer", priceCurrency: "BRL", price: (product.priceCents / 100).toFixed(2), availability: checkout ? "https://schema.org/InStock" : "https://schema.org/OutOfStock", url: siteUrl(`/concursos/${product.slug}#oferta`) }
   };
 
-  return <main className="gcm-page">
+  return <main className="gcm-page" data-meta-product-id={product.slug} data-meta-product-name={product.name} data-meta-price-cents={product.priceCents}>
+    <MetaProductView slug={product.slug} />
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([schema, productBreadcrumbSchema(product.name, product.slug)]).replace(/</g, "\\u003c") }} />
     <section className="gcm-hero"><div className="container">
       <nav className="gcm-breadcrumb" aria-label="Caminho"><Link href="/">Início</Link><span>/</span><Link href="/produtos">Materiais</Link><span>/</span><span>PRF 2026</span></nav>

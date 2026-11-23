@@ -1,0 +1,4 @@
+.meta-consent{position:fixed;z-index:1000;left:16px;right:16px;bottom:16px;max-width:760px;margin:auto;padding:16px 20px;background:#1b1225;color:#fff;border:1px solid #76568f;border-radius:10px;box-shadow:0 12px 35px #0009;display:flex;align-items:center;gap:20px;font-size:13px;line-height:1.5}
+.meta-consent p{margin:0;flex:1}.meta-consent a{text-decoration:underline}.meta-consent div{display:flex;gap:8px;flex:none}.meta-consent button{border:1px solid #a66ad1;border-radius:6px;padding:9px 13px;background:transparent;color:#fff;cursor:pointer;font:inherit}.meta-consent button:last-child{background:#8000ff;border-color:#8000ff}
+@media(max-width:600px){.meta-consent{display:block}.meta-consent div{margin-top:12px}.meta-consent button{flex:1}}
+.cookie-preferences-button{display:block;background:none;border:0;padding:0;color:inherit;font:inherit;text-align:left;cursor:pointer}.cookie-preferences-button:hover{text-decoration:underline}
