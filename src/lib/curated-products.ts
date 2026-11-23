@@ -1,5 +1,18 @@
 export const curatedProducts = [
   {
+    slug: "prf-2026",
+    name: "Apostila PRF 2026 | Polícia Rodoviária Federal",
+    productType: "Apostila digital",
+    eyebrow: "PÁGINA EXCLUSIVA · PREPARAÇÃO PRF",
+    shortDescription: "Preparação pré-edital em 39 aulas, com 195 itens autorais, três simulados de revisão e cronogramas de estudo.",
+    searchTerms: "prf polícia rodoviária federal 2026 concurso apostila pré-edital cebraspe",
+    highlights: ["39 aulas", "195 itens", "3 simulados"],
+    imageUrl: "/prf-2026/capa.webp",
+    priceCents: 1990,
+    compareAtPriceCents: null,
+    featured: true
+  },
+  {
     slug: "banestes-tecnico-bancario",
     name: "Apostila BANESTES 2026/2027 | Técnico Bancário",
     productType: "Apostila digital",
@@ -95,6 +108,10 @@ export function isLegacyGcmProduct(product: { name: string; slug: string }) {
   return /apostila/i.test(product.name) && /gcm|guarda civil municipal/i.test(`${product.name} ${product.slug}`);
 }
 
+export function isLegacyPrfProduct(product: { name: string; slug: string }) {
+  return /apostila/i.test(product.name) && /prf|polícia rodoviária federal/i.test(`${product.name} ${product.slug}`);
+}
+
 export function isLegacyBanestesProduct(product: { name: string; slug: string }) {
   return /apostila/i.test(product.name) && /banestes/i.test(`${product.name} ${product.slug}`) && /técnico bancário|tecnico bancario/i.test(product.name);
 }
@@ -104,5 +121,5 @@ export function isLegacyTjspProduct(product: { name: string; slug: string }) {
 }
 
 export function isLegacyCuratedProduct(product: { name: string; slug: string }) {
-  return isLegacyPmspProduct(product) || isLegacyPcpeProduct(product) || isLegacyIbgeProduct(product) || isLegacyGcmProduct(product) || isLegacyBanestesProduct(product) || isLegacyTjspProduct(product);
+  return isLegacyPmspProduct(product) || isLegacyPcpeProduct(product) || isLegacyIbgeProduct(product) || isLegacyGcmProduct(product) || isLegacyPrfProduct(product) || isLegacyBanestesProduct(product) || isLegacyTjspProduct(product);
 }

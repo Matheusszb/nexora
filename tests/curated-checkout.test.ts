@@ -1,10 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { isCaktoCheckoutUrl } from "../src/lib/checkout";
-import { curatedProducts, isLegacyGcmProduct, isLegacyIbgeProduct, isLegacyPcpeProduct, isLegacyPmspProduct } from "../src/lib/curated-products";
+import { curatedProducts, isLegacyGcmProduct, isLegacyIbgeProduct, isLegacyPcpeProduct, isLegacyPmspProduct, isLegacyPrfProduct } from "../src/lib/curated-products";
 
 test("preços das apostilas prioritárias seguem os valores informados para a loja", () => {
   const prices = Object.fromEntries(curatedProducts.map(product => [product.slug, product.priceCents]));
+  assert.equal(prices["prf-2026"], 1990);
   assert.equal(prices["gcm-2026"], 1900);
   assert.equal(prices["banestes-tecnico-bancario"], 3400);
   assert.equal(prices["tjsp-escrevente"], 3400);
@@ -31,4 +32,6 @@ test("produtos antigos das apostilas são substituídos pelas páginas próprias
   assert.equal(isLegacyIbgeProduct({ name: "Curso IBGE — Recenseador", slug: "curso-ibge-recenseador" }), false);
   assert.equal(isLegacyGcmProduct({ name: "Apostila GCM 2026 — Guarda Civil Municipal", slug: "apostila-gcm" }), true);
   assert.equal(isLegacyGcmProduct({ name: "Curso GCM 2026", slug: "curso-gcm" }), false);
+  assert.equal(isLegacyPrfProduct({ name: "Apostila PRF 2026", slug: "apostila-prf" }), true);
+  assert.equal(isLegacyPrfProduct({ name: "Curso PRF 2026", slug: "curso-prf" }), false);
 });
