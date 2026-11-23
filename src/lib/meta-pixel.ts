@@ -1,4 +1,4 @@
-export const META_PIXEL_ID = "1479334910968396";
+export const META_PIXEL_ID = "1420688250053150";
 export const META_CONSENT_KEY = "nexora_meta_consent";
 
 type Pixel = (action: string, event: string, data?: Record<string, unknown>) => void;

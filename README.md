@@ -80,7 +80,7 @@ No painel, abra **Checkouts** e adicione o link HTTPS `pay.cakto.com.br` da apos
 - O arquivo `public/googlefcb39b7aac3bdcf9.html` prepara a verificação por arquivo no Google Search Console. Depois de publicar, confira sua resposta no domínio final e envie `/sitemap.xml` ao Search Console. O Bing Webmaster Tools aceita um código de metatag em `BING_SITE_VERIFICATION` configurado no ambiente de build.
 - Confirme na Cakto que a apostila GCM custa **R$ 19,00**, como informado para esta revisão. O código anterior mostrava R$ 19,90; o valor exibido agora foi ajustado. Verifique também os preços e a entrega dos outros materiais antes de publicar.
 - Revise o e-mail de suporte e os textos legais no painel antes de promover a loja. As páginas legais continuam identificadas como rascunho e fora do índice até haver dados reais e revisão jurídica.
-- GA4 continua desligado. O Meta Pixel (ID `1479334910968396`) carrega apenas após consentimento e mede `PageView`, `ViewContent` e `InitiateCheckout`. O visitante pode mudar a escolha no rodapé. Um evento `Purchase` só deve ser enviado após confirmação autenticada e idempotente do provedor de pagamento; o clique no botão não é uma venda.
+- GA4 continua desligado. O Meta Pixel (ID `1420688250053150`) carrega apenas após consentimento e mede `PageView`, `ViewContent` e `InitiateCheckout`. O visitante pode mudar a escolha no rodapé. Um evento `Purchase` só deve ser enviado após confirmação autenticada e idempotente do provedor de pagamento; o clique no botão não é uma venda.
 
 ## Integrações e limites atuais
 
